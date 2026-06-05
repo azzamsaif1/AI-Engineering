@@ -1,0 +1,740 @@
+ تكون الادوات دقيقة ومتناسقة 
+📚 الدراسة البحثية - الجزء السابع
+النظام المعرفي الهندسي متعدد الحواس
+Multimodal Cognitive Engineering Twin with Persistent Memory
+🎯 الملخص التنفيذي للجزء السابع
+هذا الجزء يمثل أعلى مستويات المشروع على الإطلاق، حيث نبني نموذجاً معرفياً هندسياً متعدد الحواس:
+
+يسمع: يفهم الكلام التقني وطريقة التفكير
+
+يرى: يحلل IDE والرسوم البيانية وسير العمل
+
+يقرأ: يفهم الكود والوثائق
+
+يتذكر: يبني ذاكرة دائمة للمستخدم
+
+يتعلم: يتطور مع المستخدم عبر الزمن
+
+يحاكي: يصبح "شبيهاً جداً" بالمستخدم
+
+🏗️ المعمارية المتكاملة للنظام المعرفي متعدد الحواس
+text
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    TECH LINGUA MENTOR - الجزء السابع                           │
+│           النظام المعرفي الهندسي متعدد الحواس (Multimodal Cognitive Twin)      │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  📥 المدخلات (الحواس الرقمية)                                                   │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  🎧 السمع (Audio)  │  👁️ البصر (Vision)  │  📝 القراءة (Code)  │  🧠 السلوك  ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  ⚡ طبقة المعالجة الأولية (Ingestion Layer)                                     │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • Kafka (تدفق الأحداث)                                                     ││
+│  │  • Redis Streams (معالجة لحظية)                                             ││
+│  │  • Fluss (تخزين دفق البيانات)                                               ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🧠 طبقة الفهم (Understanding Layer)                                            │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  🎧 السمع: Whisper + Streaming ASR + Voice Activity Detection               ││
+│  │  👁️ البصر: Qwen-VL + LLaVA + MediaPipe + Screen Capture                     ││
+│  │  📝 الكود: DeepSeek Coder + Tree-sitter + LLVM + Code Embeddings            ││
+│  │  🧠 السلوك: LSTM + Transformers + Attention + Behavioral Vectors            ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🧬 طبقة البصمة المعرفية (Cognitive Fingerprint)                               │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • تحويل جميع المدخلات إلى متجهات دلالية                                     ││
+│  │  • بناء ملف تعريف ديناميكي فريد للمستخدم                                      ││
+│  │  • تحديث مستمر في الزمن الحقيقي                                              ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🗄️ طبقة الذاكرة الدائمة (Persistent Memory)                                   │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • Qdrant (ذاكرة دلالية - semantic memory)                                  ││
+│  │  • Neo4j (ذاكرة علائقية - relational memory)                                ││
+│  │  • Fluss (ذاكرة زمنية - episodic memory)                                    ││
+│  │  • Weaviate (بحث دلالي مع تخزين)                                            ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🧠 طبقة الاستدلال والتفكير (Reasoning Layer)                                   │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • DeepSeek R1 (تفكير عميق متعدد الخطوات)                                   ││
+│  │  • Qwen Reasoning (تحليل هندسي معقد)                                        ││
+│  │  • LangGraph (تنسيق الاستدلال)                                              ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  👥 الطبقة النهائية: التوأم المعرفي الهندسي (Cognitive Engineering Twin)       │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • نسخة رقمية تحاكي طريقة تفكير المستخدم                                     ││
+│  │  • تتعلم من كل قرار وقرارات                                                 ││
+│  │  • تتطور مع المستخدم عبر الزمن                                              ││
+│  │  • تصبح "شبيهاً جداً" بالمستخدم                                              ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+📊 الجدول الزمني للجزء السابع (أسابيع 121-140)
+المرحلة	الأسبوع	المهمة	الأدوات	المخرجات
+1	121-122	نظام السمع الرقمي	Whisper, Streaming ASR, VAD	فهم الكلام التقني
+2	123-124	نظام البصر الرقمي	Qwen-VL, LLaVA, MediaPipe	فهم IDE والشاشة
+3	125-126	نظام قراءة الكود	DeepSeek Coder, Tree-sitter	فهم الكود والمنطق
+4	127-128	نظام تحليل السلوك	LSTM, Transformers	فهم نمط العمل
+5	129-130	بناء البصمة المعرفية	Sentence Transformers, BGE	ملف تعريف فريد
+6	131-132	نظام الذاكرة الدائمة	Qdrant, Neo4j, Fluss	ذاكرة لا تنسى
+7	133-134	نظام الاستدلال	DeepSeek R1, LangGraph	تفكير عميق
+8	135-136	بناء التوأم المعرفي	All components	نسخة رقمية من المستخدم
+9	137-138	التكامل والاختبار	Full integration	نظام متكامل
+10	139-140	التوثيق والإطلاق	Docs, Kubernetes	إصدار كامل
+🔬 تفاصيل كل طبقة - الجزء السابع
+الطبقة: السمع الرقمي (Digital Hearing)
+python
+# backend/senses/digital_hearing.py
+import asyncio
+import numpy as np
+from faster_whisper import WhisperModel
+from silero_vad import VoiceActivityDetector
+from collections import deque
+
+class DigitalHearing:
+    def __init__(self, model_size="large-v3"):
+        self.asr = WhisperModel(model_size, device="cuda", compute_type="float16")
+        self.vad = VoiceActivityDetector()
+        self.audio_buffer = deque(maxlen=44100 * 60)  # 60 seconds buffer
+        self.thinking_patterns = []
+        
+    async def process_audio(self, audio_chunk: np.ndarray) -> Dict:
+        """معالجة الصوت وتحويله إلى فهم"""
+        # كشف النشاط الصوتي
+        is_speech = self.vad.is_speech(audio_chunk)
+        
+        if not is_speech:
+            return {'has_speech': False}
+        
+        # تخزين في المخزن المؤقت
+        self.audio_buffer.extend(audio_chunk)
+        audio_array = np.array(list(self.audio_buffer), dtype=np.float32)
+        
+        # تحويل الصوت إلى نص
+        segments, info = await asyncio.to_thread(
+            self.asr.transcribe, audio_array, beam_size=5, language="en"
+        )
+        
+        full_text = " ".join([seg.text for seg in segments])
+        
+        # تحليل نمط التفكير من الكلام
+        thinking_pattern = self._analyze_thinking_pattern(full_text)
+        self.thinking_patterns.append(thinking_pattern)
+        
+        return {
+            'has_speech': True,
+            'text': full_text,
+            'confidence': info.language_probability,
+            'thinking_pattern': thinking_pattern,
+            'duration': len(audio_array) / 16000
+        }
+    
+    def _analyze_thinking_pattern(self, text: str) -> Dict:
+        """تحليل نمط التفكير من الكلام"""
+        patterns = {
+            'hesitation': self._detect_hesitation(text),
+            'confidence': self._detect_confidence(text),
+            'technical_level': self._detect_technical_level(text),
+            'problem_solving_style': self._detect_problem_solving_style(text)
+        }
+        return patterns
+    
+    def _detect_hesitation(self, text: str) -> float:
+        """كشف التردد في الكلام"""
+        hesitation_markers = ['um', 'uh', 'like', 'actually', 'basically', 'well', 'so']
+        words = text.lower().split()
+        hesitation_count = sum(1 for w in words if w in hesitation_markers)
+        return min(1.0, hesitation_count / max(len(words), 1) * 10)
+    
+    def _detect_confidence(self, text: str) -> float:
+        """كشف الثقة من الكلام"""
+        confident_markers = ['definitely', 'absolutely', 'certainly', 'clearly', 'obviously']
+        uncertain_markers = ['maybe', 'perhaps', 'possibly', 'might', 'could be']
+        
+        words = text.lower().split()
+        confident_score = sum(1 for w in words if w in confident_markers)
+        uncertain_score = sum(1 for w in words if w in uncertain_markers)
+        
+        if confident_score + uncertain_score == 0:
+            return 0.5
+        return confident_score / (confident_score + uncertain_score)
+الطبقة: البصر الرقمي (Digital Vision)
+python
+# backend/senses/digital_vision.py
+import cv2
+import mediapipe as mp
+import torch
+from transformers import AutoModel, AutoProcessor
+from PIL import Image
+
+class DigitalVision:
+    def __init__(self):
+        # نموذج فهم الصور
+        self.processor = AutoProcessor.from_pretrained("Qwen/Qwen-VL-Chat")
+        self.vision_model = AutoModel.from_pretrained("Qwen/Qwen-VL-Chat", device_map="auto")
+        
+        # تتبع حركة العين والوجه
+        self.face_mesh = mp.solutions.face_mesh.FaceMesh()
+        self.hands = mp.solutions.hands.Hands()
+        
+        # تحليل IDE
+        self.ide_patterns = {
+            'vscode': self._analyze_vscode,
+            'pycharm': self._analyze_pycharm,
+            'terminal': self._analyze_terminal
+        }
+        
+        self.screen_history = []
+        
+    async def analyze_screen(self, screenshot: np.ndarray) -> Dict:
+        """تحليل محتوى الشاشة"""
+        # تحويل إلى PIL Image
+        image = Image.fromarray(cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB))
+        
+        # فهم محتوى الصورة
+        inputs = self.processor(images=image, return_tensors="pt")
+        with torch.no_grad():
+            outputs = self.vision_model(**inputs)
+        
+        # تحليل IDE
+        ide_type = self._detect_ide(screenshot)
+        ide_analysis = {}
+        if ide_type in self.ide_patterns:
+            ide_analysis = await self.ide_patterns[ide_type](screenshot)
+        
+        # تتبع العين والوجه
+        face_results = self.face_mesh.process(cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB))
+        eye_gaze = self._analyze_eye_gaze(face_results)
+        
+        # تتبع اليد
+        hand_results = self.hands.process(cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB))
+        hand_movements = self._analyze_hand_movements(hand_results)
+        
+        # تخزين في التاريخ
+        self.screen_history.append({
+            'timestamp': time.time(),
+            'ide_type': ide_type,
+            'ide_analysis': ide_analysis,
+            'eye_gaze': eye_gaze,
+            'hand_movements': hand_movements
+        })
+        
+        return {
+            'ide_type': ide_type,
+            'ide_analysis': ide_analysis,
+            'eye_gaze': eye_gaze,
+            'hand_movements': hand_movements,
+            'attention_focus': self._calculate_attention(eye_gaze, hand_movements)
+        }
+    
+    async def _analyze_vscode(self, screenshot: np.ndarray) -> Dict:
+        """تحليل واجهة VS Code"""
+        # الكشف عن العناصر في VS Code
+        elements = {
+            'editor': self._detect_editor_area(screenshot),
+            'sidebar': self._detect_sidebar(screenshot),
+            'terminal': self._detect_terminal(screenshot),
+            'debugger': self._detect_debugger(screenshot),
+            'git': self._detect_git_changes(screenshot)
+        }
+        return elements
+    
+    def _analyze_eye_gaze(self, face_mesh_results) -> Dict:
+        """تحليل حركة العين"""
+        if not face_mesh_results.multi_face_landmarks:
+            return {'is_looking': False, 'focus_area': None}
+        
+        landmarks = face_mesh_results.multi_face_landmarks[0]
+        # استخراج إحداثيات العين
+        left_eye = landmarks.landmark[33]
+        right_eye = landmarks.landmark[263]
+        
+        return {
+            'is_looking': True,
+            'left_eye': {'x': left_eye.x, 'y': left_eye.y},
+            'right_eye': {'x': right_eye.x, 'y': right_eye.y},
+            'focus_area': self._estimate_focus_area(left_eye, right_eye)
+        }
+الطبقة: قراءة الكود الرقمية (Digital Code Reading)
+python
+# backend/senses/digital_code_reading.py
+import tree_sitter
+from tree_sitter import Language, Parser
+import re
+from typing import Dict, List
+
+class DigitalCodeReading:
+    def __init__(self):
+        # تحميل لغات Tree-sitter
+        self.parsers = {}
+        for lang in ['python', 'javascript', 'java', 'cpp', 'go', 'rust']:
+            parser = Parser()
+            parser.set_language(getattr(tree_sitter, f'Language_{lang.upper()}'))
+            self.parsers[lang] = parser
+        
+        self.reading_patterns = []
+        self.understanding_scores = []
+        
+    async def read_code(self, code: str, language: str = 'python') -> Dict:
+        """قراءة الكود وتحليله"""
+        if language not in self.parsers:
+            language = 'python'
+        
+        # تحليل AST
+        parser = self.parsers[language]
+        tree = parser.parse(bytes(code, "utf8"))
+        root = tree.root_node
+        
+        # استخراج المعلومات
+        functions = self._extract_functions(root)
+        classes = self._extract_classes(root)
+        imports = self._extract_imports(root)
+        complexity = self._calculate_complexity(root)
+        
+        # فهم منطق الكود
+        logic = await self._understand_logic(code, functions, classes)
+        
+        return {
+            'language': language,
+            'functions': functions,
+            'classes': classes,
+            'imports': imports,
+            'complexity': complexity,
+            'logic_understanding': logic,
+            'ast_depth': self._calculate_ast_depth(root)
+        }
+    
+    def _extract_functions(self, node, functions=None) -> List[Dict]:
+        """استخراج جميع الدوال من AST"""
+        if functions is None:
+            functions = []
+        
+        if node.type == 'function_definition':
+            # استخراج اسم الدالة
+            for child in node.children:
+                if child.type == 'identifier':
+                    functions.append({
+                        'name': child.text.decode('utf8'),
+                        'start_line': node.start_point[0],
+                        'end_line': node.end_point[0],
+                        'params': self._extract_params(node)
+                    })
+                    break
+        
+        for child in node.children:
+            self._extract_functions(child, functions)
+        
+        return functions
+    
+    async def _understand_logic(self, code: str, functions: List, classes: List) -> Dict:
+        """فهم منطق الكود باستخدام النماذج"""
+        # استخدام DeepSeek Coder لفهم المنطق
+        prompt = f"""
+        Analyze this code and explain:
+        1. What does this code do?
+        2. What is the main algorithm?
+        3. What are the edge cases?
+        4. What could be improved?
+        
+        Code:
+        {code[:2000]}
+        """
+        
+        # هنا سيتم استدعاء النموذج
+        return {
+            'purpose': "Understood from code analysis",
+            'algorithm': "Detected from structure",
+            'edge_cases': ["Detected from conditionals"],
+            'improvements': ["Optimization possible"]
+        }
+الطبقة: البصمة المعرفية (Cognitive Fingerprint)
+python
+# backend/cognitive/cognitive_fingerprint.py
+from sentence_transformers import SentenceTransformer
+import numpy as np
+from collections import defaultdict
+import json
+
+class CognitiveFingerprint:
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        self.encoder = SentenceTransformer("BAAI/bge-m3")
+        
+        # مكونات البصمة
+        self.thinking_patterns = []
+        self.coding_style = defaultdict(list)
+        self.decision_history = []
+        self.preferences = defaultdict(list)
+        self.skill_evolution = []
+        
+        # المتجه المعرفي الأساسي
+        self.cognitive_vector = None
+        self.last_update = time.time()
+        
+    async def update(self, data: Dict) -> None:
+        """تحديث البصمة المعرفية ببيانات جديدة"""
+        # تحديث أنماط التفكير
+        if 'thinking_pattern' in data:
+            self.thinking_patterns.append(data['thinking_pattern'])
+        
+        # تحديث أسلوب البرمجة
+        if 'code_analysis' in data:
+            style = self._extract_coding_style(data['code_analysis'])
+            for key, value in style.items():
+                self.coding_style[key].append(value)
+        
+        # تحديث تاريخ القرارات
+        if 'decision' in data:
+            self.decision_history.append({
+                'decision': data['decision'],
+                'context': data.get('context', ''),
+                'timestamp': time.time()
+            })
+        
+        # تحديث التفضيلات
+        if 'preference' in data:
+            self.preferences[data['preference']['type']].append(data['preference']['value'])
+        
+        # إعادة حساب المتجه المعرفي
+        await self._recompute_cognitive_vector()
+        
+        self.last_update = time.time()
+    
+    async def _recompute_cognitive_vector(self) -> None:
+        """إعادة حساب المتجه المعرفي بناءً على جميع البيانات"""
+        # تجميع جميع البيانات في نص واحد
+        profile_text = self._compile_profile_text()
+        
+        # تحويل إلى متجه
+        self.cognitive_vector = self.encoder.encode([profile_text])[0]
+    
+    def _compile_profile_text(self) -> str:
+        """تجميع البيانات في نص تمثيلي للبصمة"""
+        text_parts = []
+        
+        # إضافة أنماط التفكير
+        if self.thinking_patterns:
+            recent_patterns = self.thinking_patterns[-50:]
+            text_parts.append(f"Thinking patterns: {json.dumps(recent_patterns)}")
+        
+        # إضافة أسلوب البرمجة
+        if self.coding_style:
+            avg_style = {}
+            for key, values in self.coding_style.items():
+                if values:
+                    avg_style[key] = sum(values) / len(values)
+            text_parts.append(f"Coding style: {json.dumps(avg_style)}")
+        
+        # إضافة تاريخ القرارات
+        if self.decision_history:
+            recent_decisions = self.decision_history[-20:]
+            text_parts.append(f"Decision history: {json.dumps(recent_decisions)}")
+        
+        return " ".join(text_parts)
+    
+    def get_fingerprint(self) -> Dict:
+        """الحصول على البصمة المعرفية الحالية"""
+        return {
+            'user_id': self.user_id,
+            'cognitive_vector': self.cognitive_vector.tolist() if self.cognitive_vector is not None else None,
+            'thinking_patterns_count': len(self.thinking_patterns),
+            'coding_style': dict(self.coding_style),
+            'decisions_count': len(self.decision_history),
+            'preferences': dict(self.preferences),
+            'last_update': self.last_update
+        }
+    
+    def get_similarity_to(self, other_fingerprint: 'CognitiveFingerprint') -> float:
+        """حساب التشابه بين بصمتين معرفيتين"""
+        if self.cognitive_vector is None or other_fingerprint.cognitive_vector is None:
+            return 0.0
+        
+        similarity = np.dot(self.cognitive_vector, other_fingerprint.cognitive_vector)
+        return float(similarity)
+الطبقة: الذاكرة الدائمة (Persistent Memory)
+python
+# backend/memory/persistent_memory.py
+from qdrant_client import QdrantClient
+from qdrant_client.models import PointStruct, VectorParams, Distance
+from neo4j import GraphDatabase
+import uuid
+
+class PersistentMemory:
+    def __init__(self):
+        # الذاكرة الدلالية (Semantic Memory)
+        self.qdrant = QdrantClient(host="localhost", port=6333)
+        self._ensure_collections()
+        
+        # الذاكرة العلائقية (Relational Memory)
+        self.neo4j = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "password"))
+        
+        # الذاكرة الزمنية (Episodic Memory)
+        self.episodic_memory = []
+        
+    def _ensure_collections(self):
+        """التأكد من وجود المجموعات اللازمة"""
+        collections = ['thinking_patterns', 'code_embeddings', 'decisions', 'preferences']
+        for collection in collections:
+            try:
+                self.qdrant.create_collection(
+                    collection_name=collection,
+                    vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+                )
+            except:
+                pass  # Collection already exists
+    
+    async def store_semantic(self, data: Dict, vector: np.ndarray, collection: str) -> str:
+        """تخزين الذاكرة الدلالية"""
+        point_id = str(uuid.uuid4())
+        self.qdrant.upsert(
+            collection_name=collection,
+            points=[PointStruct(id=point_id, vector=vector.tolist(), payload=data)]
+        )
+        return point_id
+    
+    async def search_semantic(self, query_vector: np.ndarray, collection: str, limit: int = 10) -> List:
+        """البحث الدلالي"""
+        results = self.qdrant.search(
+            collection_name=collection,
+            query_vector=query_vector.tolist(),
+            limit=limit
+        )
+        return [{'id': r.id, 'score': r.score, 'payload': r.payload} for r in results]
+    
+    async def store_relational(self, subject: str, relation: str, object: str) -> None:
+        """تخزين الذاكرة العلائقية في Neo4j"""
+        with self.neo4j.session() as session:
+            session.run(
+                f"MERGE (s:Concept {{name: $subject}}) "
+                f"MERGE (o:Concept {{name: $object}}) "
+                f"MERGE (s)-[:{relation}]->(o)",
+                subject=subject, object=object
+            )
+    
+    async def query_relational(self, concept: str, relation: str = None) -> List:
+        """الاستعلام عن الذاكرة العلائقية"""
+        query = f"MATCH (c:Concept {{name: $concept}})"
+        if relation:
+            query += f"-[r:{relation}]->(related)"
+        else:
+            query += "-[r]->(related)"
+        query += " RETURN related.name as name, type(r) as relation"
+        
+        with self.neo4j.session() as session:
+            result = session.run(query, concept=concept)
+            return [{'name': record['name'], 'relation': record['relation']} for record in result]
+    
+    async def store_episodic(self, event: Dict) -> None:
+        """تخزين الذاكرة الزمنية"""
+        self.episodic_memory.append({
+            **event,
+            'timestamp': time.time(),
+            'event_id': str(uuid.uuid4())
+        })
+        
+        # الحفاظ على آخر 10000 حدث فقط
+        if len(self.episodic_memory) > 10000:
+            self.episodic_memory = self.episodic_memory[-10000:]
+    
+    async def query_episodic(self, start_time: float = None, end_time: float = None, event_type: str = None) -> List:
+        """الاستعلام عن الذاكرة الزمنية"""
+        results = self.episodic_memory
+        
+        if start_time:
+            results = [e for e in results if e['timestamp'] >= start_time]
+        if end_time:
+            results = [e for e in results if e['timestamp'] <= end_time]
+        if event_type:
+            results = [e for e in results if e.get('type') == event_type]
+        
+        return results
+الطبقة: التوأم المعرفي الهندسي (Cognitive Engineering Twin)
+python
+# backend/twin/cognitive_twin.py
+from backend.senses.digital_hearing import DigitalHearing
+from backend.senses.digital_vision import DigitalVision
+from backend.senses.digital_code_reading import DigitalCodeReading
+from backend.cognitive.cognitive_fingerprint import CognitiveFingerprint
+from backend.memory.persistent_memory import PersistentMemory
+
+class CognitiveEngineeringTwin:
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        self.hearing = DigitalHearing()
+        self.vision = DigitalVision()
+        self.code_reading = DigitalCodeReading()
+        self.fingerprint = CognitiveFingerprint(user_id)
+        self.memory = PersistentMemory()
+        
+        self.learning_rate = 0.01
+        self.last_learning = time.time()
+        
+    async def perceive(self, audio: np.ndarray, screen: np.ndarray, code: str, behavior: Dict) -> Dict:
+        """إدراك المدخلات من جميع الحواس"""
+        # السمع
+        hearing_result = await self.hearing.process_audio(audio) if audio is not None else {}
+        
+        # البصر
+        vision_result = await self.vision.analyze_screen(screen) if screen is not None else {}
+        
+        # قراءة الكود
+        code_result = await self.code_reading.read_code(code) if code else {}
+        
+        # السلوك
+        behavior_result = behavior or {}
+        
+        # دمج جميع المدخلات
+        perception = {
+            'hearing': hearing_result,
+            'vision': vision_result,
+            'code': code_result,
+            'behavior': behavior_result,
+            'timestamp': time.time()
+        }
+        
+        # تحديث البصمة المعرفية
+        await self.fingerprint.update(perception)
+        
+        # تخزين في الذاكرة
+        await self._store_in_memory(perception)
+        
+        return perception
+    
+    async def think(self, perception: Dict) -> Dict:
+        """التفكير بناءً على الإدراك الحالي والذاكرة"""
+        # البحث في الذاكرة عن حالات مشابهة
+        similar_memories = await self._retrieve_similar_memories(perception)
+        
+        # الاستدلال بناءً على التشابه
+        reasoning = await self._reason(perception, similar_memories)
+        
+        return {
+            'reasoning': reasoning,
+            'similar_memories': len(similar_memories),
+            'confidence': self._calculate_confidence(perception, similar_memories)
+        }
+    
+    async def act(self, thinking: Dict) -> Dict:
+        """اتخاذ إجراء بناءً على التفكير"""
+        actions = []
+        
+        if thinking['reasoning'].get('needs_help'):
+            actions.append({
+                'type': 'suggestion',
+                'content': thinking['reasoning']['suggestion']
+            })
+        
+        if thinking['reasoning'].get('needs_correction'):
+            actions.append({
+                'type': 'correction',
+                'content': thinking['reasoning']['correction']
+            })
+        
+        return {
+            'actions': actions,
+            'response_time': time.time() - thinking.get('timestamp', time.time())
+        }
+    
+    async def learn(self, experience: Dict) -> None:
+        """التعلم من التجارب الجديدة"""
+        # تحديث البصمة المعرفية
+        await self.fingerprint.update(experience)
+        
+        # تحديث الذاكرة
+        await self._store_in_memory(experience)
+        
+        # تحديث معدل التعلم
+        time_since_last = time.time() - self.last_learning
+        if time_since_last > 3600:  # كل ساعة
+            self.learning_rate = min(0.1, self.learning_rate * 1.1)
+            self.last_learning = time.time()
+        
+        self.last_learning = time.time()
+    
+    async def _store_in_memory(self, data: Dict) -> None:
+        """تخزين البيانات في الذاكرة"""
+        # إنشاء متجه للبيانات
+        from sentence_transformers import SentenceTransformer
+        encoder = SentenceTransformer("BAAI/bge-m3")
+        vector = encoder.encode([str(data)])[0]
+        
+        # تخزين في الذاكرة الدلالية
+        await self.memory.store_semantic(
+            data={'timestamp': data['timestamp'], 'type': 'perception'},
+            vector=vector,
+            collection='user_perceptions'
+        )
+        
+        # تخزين في الذاكرة الزمنية
+        await self.memory.store_episodic(data)
+    
+    async def _retrieve_similar_memories(self, perception: Dict, limit: int = 10) -> List:
+        """استرجاع ذكريات مشابهة"""
+        from sentence_transformers import SentenceTransformer
+        encoder = SentenceTransformer("BAAI/bge-m3")
+        query_vector = encoder.encode([str(perception)])[0]
+        
+        return await self.memory.search_semantic(query_vector, 'user_perceptions', limit)
+    
+    async def _reason(self, perception: Dict, similar_memories: List) -> Dict:
+        """الاستدلال بناءً على الإدراك والذاكرة"""
+        # هنا يتم استخدام النماذج للاستدلال
+        # يمكن استخدام DeepSeek R1 أو Qwen Reasoning
+        
+        # تبسيط للتطبيق
+        return {
+            'analysis': 'Perception analyzed',
+            'suggestion': 'Based on similar experiences, consider...',
+            'confidence': 0.85
+        }
+    
+    def get_identity(self) -> Dict:
+        """الحصول على الهوية الحالية للتوأم"""
+        fingerprint = self.fingerprint.get_fingerprint()
+        
+        return {
+            'user_id': self.user_id,
+            'fingerprint': fingerprint,
+            'learning_rate': self.learning_rate,
+            'memory_size': len(self.memory.episodic_memory),
+            'last_learning': self.last_learning
+        }
+📊 جدول مقارنة: المكونات الأساسية للتوأم المعرفي
+المكون	الوظيفة	البيانات	التقنيات	المخرجات
+السمع	فهم الكلام التقني	الصوت	Whisper, VAD	نص، ثقة، أنماط تفكير
+البصر	فهم الشاشة وIDE	الفيديو	Qwen-VL, MediaPipe	تحليل IDE، تتبع العين
+قراءة الكود	فهم الكود	الكود	Tree-sitter, DeepSeek	AST، دوال، منطق
+السلوك	تحليل نمط العمل	الأحداث	LSTM, Transformers	أنماط سلوكية
+البصمة المعرفية	ملف تعريف فريد	جميع البيانات	BGE, Sentence Transformers	متجه معرفي
+الذاكرة الدائمة	تخزين واسترجاع	جميع البيانات	Qdrant, Neo4j	ذاكرة دلالية/علائقية
+الاستدلال	التفكير واتخاذ القرارات	الذاكرة + الإدراك	DeepSeek R1	قرارات، توصيات
+التعلم	التطور المستمر	التجارب	Online Learning	تحسين مستمر
+✅ الخلاصة النهائية للجزء السابع
+هذا هو النظام المعرفي الهندسي متعدد الحواس:
+
+المكون	الحالة
+السمع الرقمي	✅ صممنا
+البصر الرقمي	✅ صممنا
+قراءة الكود الرقمية	✅ صممنا
+البصمة المعرفية	✅ صممنا
+الذاكرة الدائمة	✅ صممنا
+الاستدلال	✅ صممنا
+التعلم المستمر	✅ صممنا
+🚀 الخلاصة النهائية للمشروع كاملاً (7 أجزاء)
+الجزء	المحتوى	عدد الطبقات	الحالة
+1	فهم المصطلحات التقنية	6	✅ مكتمل
+2	النظام التنافسي الهندسي	6	✅ مكتمل
+3	التوأم الهندسي الرقمي	6	✅ مكتمل
+4	النظام المعرفي متعدد الوسائط	5	✅ مكتمل
+5	النظام النهائي المتكامل	10	✅ مكتمل
+6	النظام البيئي متعدد الوكلاء	8	✅ مكتمل
+7	النظام المعرفي متعدد الحواس	7	✅ مكتمل
+المجموع	7 أجزاء	48 طبقة	✅ مكتمل
+الآن لديك الدراسة البحثية الكاملة في 7 أجزاء. هل تريد مني البدء في كتابة الكود الفعلي للمرحلة الأولى (الأبسط)؟ 🔥
+

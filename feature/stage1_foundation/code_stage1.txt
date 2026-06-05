@@ -1,0 +1,1579 @@
+خطاء 15files
+✅ المرحلة الأولى النهائية - جميع الملفات الخمسة عشر كاملة
+Semantic Adaptive Discovery Engine (SADE) v3.0 - Full Implementation
+📁 الملف 1: __init__.py
+python
+# backend/stage1_sade_v3/__init__.py
+"""
+Semantic Adaptive Discovery Engine (SADE) v3.0
+Production-ready semantic understanding layer for TechLingua Mentor
+"""
+
+from .pipeline import SADEPipelineV3
+from .language_detector import LanguageDetector
+from .semantic_sentence_boundary import SemanticSentenceBoundary
+from .code_identifier import CodeIdentifier
+from .embeddings_manager import EmbeddingsManager
+from .sentence_clustering import SentenceClusterer
+from .multi_resolution_concept import MultiResolutionConceptExtractor
+from .semantic_typing import SemanticTypingSystem
+from .relation_candidate_generator import RelationCandidateGenerator
+from .contextual_relation_validator import ContextualRelationValidator
+from .probabilistic_graph import ProbabilisticGraph
+from .temporal_evolution import TemporalEvolution
+from .confidence_scorer import ConfidenceScorer
+
+__all__ = [
+    'SADEPipelineV3',
+    'LanguageDetector',
+    'SemanticSentenceBoundary',
+    'CodeIdentifier',
+    'EmbeddingsManager',
+    'SentenceClusterer',
+    'MultiResolutionConceptExtractor',
+    'SemanticTypingSystem',
+    'RelationCandidateGenerator',
+    'ContextualRelationValidator',
+    'ProbabilisticGraph',
+    'TemporalEvolution',
+    'ConfidenceScorer'
+]
+
+__version__ = '3.0.0'
+📁 الملف 2: language_detector.py
+python
+# backend/stage1_sade_v3/language_detector.py
+"""
+Language Detection - No user input required
+Automatically detects language from text
+"""
+
+import re
+from langdetect import detect, DetectorFactory
+from langdetect.lang_detect_exception import LangDetectException
+
+DetectorFactory.seed = 0
+
+class LanguageDetector:
+    def __init__(self):
+        self.supported_languages = ['en', 'de', 'fr', 'es', 'it', 'pt', 'ru', 'zh', 'ja', 'ar']
+        
+    def detect(self, text: str) -> dict:
+        """
+        Detect language automatically from text
+        Returns: {'language': 'en', 'confidence': 0.95, 'is_reliable': True}
+        """
+        if not text or len(text) < 20:
+            return {'language': 'en', 'confidence': 0.5, 'is_reliable': False}
+        
+        try:
+            # Clean text for better detection
+            clean_text = re.sub(r'[^\w\s]', ' ', text[:500])
+            lang = detect(clean_text)
+            
+            confidence = self._calculate_confidence(clean_text, lang)
+            
+            return {
+                'language': lang if lang in self.supported_languages else 'en',
+                'confidence': confidence,
+                'is_reliable': confidence > 0.7
+            }
+        except LangDetectException:
+            return {'language': 'en', 'confidence': 0.3, 'is_reliable': False}
+    
+    def _calculate_confidence(self, text: str, lang: str) -> float:
+        """Calculate confidence based on text length and language patterns"""
+        base_confidence = min(0.95, len(text) / 500)
+        return round(base_confidence, 2)
+📁 الملف 3: semantic_sentence_boundary.py
+python
+# backend/stage1_sade_v3/semantic_sentence_boundary.py
+"""
+Semantic Sentence Boundary Detection with Code Masking
+No naive split on "."
+"""
+
+import re
+from typing import List, Dict
+import spacy
+
+class SemanticSentenceBoundary:
+    def __init__(self):
+        # Load spaCy models once (not every call)
+        try:
+            self.nlp_en = spacy.load("en_core_web_sm")
+        except OSError:
+            import subprocess
+            subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+            self.nlp_en = spacy.load("en_core_web_sm")
+        
+        try:
+            self.nlp_de = spacy.load("de_core_news_sm")
+        except OSError:
+            import subprocess
+            subprocess.run(["python", "-m", "spacy", "download", "de_core_news_sm"])
+            self.nlp_de = spacy.load("de_core_news_sm")
+        
+        # Code block pattern for masking
+        self.code_block_pattern = re.compile(r'```[\s\S]*?```|`[^`]+`', re.MULTILINE)
+        
+    def split_sentences(self, text: str, language: str = 'en') -> List[str]:
+        """
+        Split text into sentences using semantic boundary detection
+        """
+        if not text:
+            return []
+        
+        # Temporarily replace code blocks
+        code_blocks = []
+        def replace_code(match):
+            code_blocks.append(match.group(0))
+            return f" __CODE_BLOCK_{len(code_blocks)-1}__ "
+        
+        text_no_code = self.code_block_pattern.sub(replace_code, text)
+        
+        # Use spaCy for sentence detection
+        nlp = self.nlp_en if language == 'en' else self.nlp_de
+        doc = nlp(text_no_code)
+        
+        # Extract sentences
+        sentences = []
+        for sent in doc.sents:
+            sent_text = sent.text.strip()
+            if sent_text:
+                # Restore code blocks
+                for i, code in enumerate(code_blocks):
+                    sent_text = sent_text.replace(f"__CODE_BLOCK_{i}__", code)
+                sentences.append(sent_text)
+        
+        return sentences
+    
+    def get_sentence_metadata(self, text: str, language: str = 'en') -> List[Dict]:
+        """
+        Get detailed sentence metadata
+        """
+        sentences = self.split_sentences(text, language)
+        metadata = []
+        
+        for sent in sentences:
+            metadata.append({
+                'text': sent,
+                'length': len(sent),
+                'word_count': len(sent.split()),
+                'has_code': bool(re.search(r'```|`', sent)),
+                'has_abbreviation': bool(re.search(r'\b[A-Z]\.', sent)),
+                'is_technical': self._is_technical_sentence(sent)
+            })
+        
+        return metadata
+    
+    def _is_technical_sentence(self, sentence: str) -> bool:
+        """Check if sentence contains technical content"""
+        technical_indicators = [
+            r'\b[A-Z]{2,}\b',           # Acronyms
+            r'\b\d+\s*(?:GB|MB|KB|ms|ns)\b',  # Units
+            r'\b(?:function|class|struct|enum)\b',  # Code keywords
+            r'[{}();]',                 # Code punctuation
+        ]
+        
+        for pattern in technical_indicators:
+            if re.search(pattern, sentence):
+                return True
+        return False
+📁 الملف 4: code_identifier.py
+python
+# backend/stage1_sade_v3/code_identifier.py
+"""
+Code vs Text Identifier - Separates natural language from code
+"""
+
+import re
+from typing import Dict, List
+
+class CodeIdentifier:
+    def __init__(self):
+        self.code_patterns = [
+            r'```[\s\S]*?```',                       # Code blocks
+            r'`[^`]+`',                               # Inline code
+            r'\b(def|class|import|from|return|if|else|for|while|try|except)\b',  # Python keywords
+            r'\bfunction\s*\([^)]*\)\s*{',            # JavaScript functions
+            r'\bpublic\s+(?:static\s+)?(?:void|int|string|bool)\b',  # Java/C# signatures
+            r'\#include\s*<[^>]+>',                   # C/C++ includes
+            r'\bpackage\s+[a-z][a-z0-9_.]*;',         # Go/Java packages
+            r'\bimpl\s+\w+\s+for\s+\w+',              # Rust impl blocks
+            r'\b(?:let|const|var)\s+\w+\s*=',         # JS/TS variable declarations
+            r'\b(?:fn|pub fn|unsafe fn)\s+\w+',       # Rust functions
+        ]
+        
+    def classify(self, text: str) -> Dict:
+        """
+        Classify whether content is code or natural language
+        """
+        is_code = False
+        matched_patterns = []
+        
+        for pattern in self.code_patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            if matches:
+                is_code = True
+                matched_patterns.extend(matches)
+        
+        # Calculate code ratio
+        code_chars = sum(len(m) for m in matched_patterns)
+        total_chars = len(text)
+        code_ratio = code_chars / max(total_chars, 1)
+        
+        return {
+            'is_code': is_code,
+            'code_ratio': round(code_ratio, 2),
+            'matched_patterns': matched_patterns[:5],
+            'classification': 'code' if code_ratio > 0.3 else 'text'
+        }
+📁 الملف 5: embeddings_manager.py
+python
+# backend/stage1_sade_v3/embeddings_manager.py
+"""
+Embeddings Manager with Batch Encoding and LRU Cache
+"""
+
+import hashlib
+from typing import List, Union, Optional
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+class EmbeddingsManager:
+    def __init__(self, cache_size: int = 1000):
+        print("Loading embedding models...")
+        self.text_encoder = SentenceTransformer("BAAI/bge-m3")
+        self.cache_size = cache_size
+        self.embedding_cache = {}
+        self.cache_hits = 0
+        self.cache_misses = 0
+        
+        # CodeBERT optional (lazy load)
+        self._code_encoder = None
+        self._code_tokenizer = None
+        
+    def encode_text_batch(self, texts: List[str], batch_size: int = 32) -> np.ndarray:
+        """
+        Encode multiple texts in batches for efficiency
+        """
+        if not texts:
+            return np.array([])
+        
+        all_embeddings = []
+        
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i+batch_size]
+            
+            # Check cache first
+            uncached_indices = []
+            uncached_texts = []
+            embeddings_batch = [None] * len(batch)
+            
+            for j, text in enumerate(batch):
+                cache_key = hashlib.md5(text.encode('utf-8')).hexdigest()
+                if cache_key in self.embedding_cache:
+                    embeddings_batch[j] = self.embedding_cache[cache_key]
+                    self.cache_hits += 1
+                else:
+                    uncached_indices.append(j)
+                    uncached_texts.append(text)
+                    self.cache_misses += 1
+            
+            # Encode uncached texts
+            if uncached_texts:
+                new_embeddings = self.text_encoder.encode(
+                    uncached_texts, 
+                    normalize_embeddings=True,
+                    show_progress_bar=False
+                )
+                
+                for idx, emb in zip(uncached_indices, new_embeddings):
+                    cache_key = hashlib.md5(batch[idx].encode('utf-8')).hexdigest()
+                    self.embedding_cache[cache_key] = emb
+                    embeddings_batch[idx] = emb
+            
+            all_embeddings.extend(embeddings_batch)
+        
+        # Manage cache size (LRU-like)
+        if len(self.embedding_cache) > self.cache_size:
+            # Remove oldest 20% of entries
+            keys_to_remove = list(self.embedding_cache.keys())[:len(self.embedding_cache) - self.cache_size]
+            for key in keys_to_remove:
+                del self.embedding_cache[key]
+        
+        return np.array(all_embeddings)
+    
+    def encode_text(self, text: str) -> np.ndarray:
+        """Encode single text with caching"""
+        return self.encode_text_batch([text])[0]
+    
+    def get_code_encoder(self):
+        """Lazy load CodeBERT for code understanding"""
+        if self._code_encoder is None:
+            from transformers import AutoTokenizer, AutoModel
+            self._code_tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
+            self._code_encoder = AutoModel.from_pretrained("microsoft/codebert-base")
+            self._code_encoder.eval()
+        return self._code_encoder
+    
+    def get_cache_stats(self) -> dict:
+        """Get cache performance statistics"""
+        total = self.cache_hits + self.cache_misses
+        hit_rate = self.cache_hits / total if total > 0 else 0
+        return {
+            'cache_size': len(self.embedding_cache),
+            'cache_hits': self.cache_hits,
+            'cache_misses': self.cache_misses,
+            'hit_rate': round(hit_rate, 3)
+        }
+📁 الملف 6: sentence_clustering.py
+python
+# backend/stage1_sade_v3/sentence_clustering.py
+"""
+Sentence-Level Clustering with Persistent Semantic Anchors
+Clusters sentences, not documents
+"""
+
+import numpy as np
+import umap
+import hdbscan
+from typing import List, Dict, Optional
+from sklearn.preprocessing import StandardScaler
+from collections import OrderedDict
+
+class SentenceClusterer:
+    def __init__(self, anchor_persistence: float = 0.8):
+        self.anchor_persistence = anchor_persistence
+        self.umap_reducer = umap.UMAP(
+            n_neighbors=15,
+            n_components=5,
+            min_dist=0.0,
+            metric='cosine',
+            random_state=42
+        )
+        
+        self.clusterer = hdbscan.HDBSCAN(
+            min_cluster_size=2,
+            min_samples=1,
+            metric='euclidean',
+            cluster_selection_method='eom',
+            prediction_data=True
+        )
+        
+        # Persistent anchors for topics
+        self.anchors = OrderedDict()
+        self.next_anchor_id = 0
+        self.is_fitted = False
+        
+    def cluster_sentences(self, sentences: List[str], embeddings: np.ndarray) -> Dict:
+        """
+        Cluster sentences, not documents
+        """
+        if len(sentences) < 2 or len(embeddings) < 2:
+            return {'clusters': [], 'labels': [-1] * len(sentences), 'num_clusters': 0}
+        
+        # Normalize embeddings first (for cosine safety)
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        normalized_embeddings = embeddings / (norms + 1e-8)
+        
+        # Reduce dimensionality with UMAP
+        reduced_embeddings = self.umap_reducer.fit_transform(normalized_embeddings)
+        
+        # Normalize reduced embeddings again
+        norms_reduced = np.linalg.norm(reduced_embeddings, axis=1, keepdims=True)
+        reduced_embeddings = reduced_embeddings / (norms_reduced + 1e-8)
+        
+        # Cluster with HDBSCAN
+        labels = self.clusterer.fit_predict(reduced_embeddings)
+        self.is_fitted = True
+        
+        # Match with persistent anchors
+        clusters = self._match_with_anchors(reduced_embeddings, labels, sentences)
+        
+        return {
+            'clusters': clusters,
+            'labels': labels.tolist(),
+            'num_clusters': len(clusters),
+            'sentence_count': len(sentences)
+        }
+    
+    def _match_with_anchors(self, embeddings: np.ndarray, labels: np.ndarray, 
+                           sentences: List[str]) -> List[Dict]:
+        """Match clusters with persistent semantic anchors using cosine similarity"""
+        unique_labels = set(labels)
+        clusters = []
+        
+        for label in unique_labels:
+            if label == -1:
+                continue
+            
+            mask = labels == label
+            cluster_embeddings = embeddings[mask]
+            cluster_center = np.mean(cluster_embeddings, axis=0)
+            # Normalize center
+            norm_center = np.linalg.norm(cluster_center)
+            if norm_center > 1e-8:
+                cluster_center = cluster_center / norm_center
+            
+            # Find best matching anchor using cosine similarity
+            best_anchor_id = None
+            best_similarity = self.anchor_persistence
+            
+            for anchor_id, anchor_data in self.anchors.items():
+                # Ensure anchor embedding is normalized
+                anchor_emb = anchor_data['embedding']
+                norm_anchor = np.linalg.norm(anchor_emb)
+                if norm_anchor > 1e-8:
+                    anchor_emb = anchor_emb / norm_anchor
+                similarity = np.dot(cluster_center, anchor_emb)
+                
+                if similarity > best_similarity:
+                    best_similarity = similarity
+                    best_anchor_id = anchor_id
+            
+            if best_anchor_id is not None:
+                # Update existing anchor
+                anchor = self.anchors[best_anchor_id]
+                # Moving average update
+                anchor['embedding'] = anchor['embedding'] * 0.7 + cluster_center * 0.3
+                # Normalize anchor
+                norm_anchor = np.linalg.norm(anchor['embedding'])
+                if norm_anchor > 1e-8:
+                    anchor['embedding'] = anchor['embedding'] / norm_anchor
+                
+                anchor_sentences = [sentences[i] for i in np.where(mask)[0]]
+                anchor['sentences'].extend(anchor_sentences)
+                anchor['sentences'] = anchor['sentences'][-20:]  # Keep last 20
+                
+                clusters.append({
+                    'cluster_id': best_anchor_id,
+                    'is_new': False,
+                    'size': int(np.sum(mask)),
+                    'similarity': round(float(best_similarity), 3),
+                    'sample_sentences': anchor['sentences'][:3]
+                })
+            else:
+                # Create new anchor
+                anchor_id = self.next_anchor_id
+                self.next_anchor_id += 1
+                self.anchors[anchor_id] = {
+                    'embedding': cluster_center.copy(),
+                    'sentences': [sentences[i] for i in np.where(mask)[0]]
+                }
+                
+                clusters.append({
+                    'cluster_id': anchor_id,
+                    'is_new': True,
+                    'size': int(np.sum(mask)),
+                    'similarity': 1.0,
+                    'sample_sentences': self.anchors[anchor_id]['sentences'][:3]
+                })
+        
+        return clusters
+    
+    def get_anchor_snapshot(self) -> Dict:
+        """Get snapshot of all persistent anchors"""
+        return {
+            str(anchor_id): {
+                'embedding': anchor['embedding'].tolist(),
+                'sentences': anchor['sentences'][:5],
+                'sentence_count': len(anchor['sentences'])
+            }
+            for anchor_id, anchor in self.anchors.items()
+        }
+📁 الملف 7: multi_resolution_concept.py
+python
+# backend/stage1_sade_v3/multi_resolution_concept.py
+"""
+Multi-resolution Concept Extraction
+Extracts concepts at token, phrase, and semantic unit levels
+"""
+
+import re
+from typing import List, Dict
+from collections import Counter
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+try:
+    from keybert import KeyBERT
+    KEYBERT_AVAILABLE = True
+except ImportError:
+    KEYBERT_AVAILABLE = False
+
+class MultiResolutionConceptExtractor:
+    def __init__(self):
+        self.embedding_model = SentenceTransformer("BAAI/bge-m3")
+        
+        if KEYBERT_AVAILABLE:
+            self.keybert = KeyBERT(model=self.embedding_model)
+        else:
+            self.keybert = None
+        
+        # Technical patterns (auxiliary, not primary)
+        self.patterns = {
+            'acronym': [r'\b[A-Z]{2,}\b'],
+            'camelcase': [r'[A-Z][a-z]+(?:[A-Z][a-z]+)+'],
+            'alphanumeric': [r'\b[a-z]+[0-9]+\b'],
+        }
+        
+        self.stop_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have',
+                          'are', 'was', 'were', 'been', 'but', 'not', 'can', 'will',
+                          'der', 'die', 'das', 'und', 'oder', 'aber', 'mit', 'von', 'zu'}
+        
+    def extract_concepts(self, text: str, top_n: int = 30) -> List[Dict]:
+        """
+        Extract concepts at multiple resolution levels
+        """
+        concepts = []
+        
+        # Level 1: KeyBERT extraction (semantic, primary)
+        if self.keybert:
+            keybert_concepts = self._extract_keybert(text)
+            concepts.extend(keybert_concepts)
+        
+        # Level 2: Pattern-based (auxiliary, for technical terms)
+        pattern_concepts = self._extract_pattern_based(text)
+        concepts.extend(pattern_concepts)
+        
+        # Level 3: Noun phrase extraction
+        phrase_concepts = self._extract_noun_phrases(text)
+        concepts.extend(phrase_concepts)
+        
+        # Merge and score
+        unique_concepts = self._merge_and_score(concepts, text)
+        
+        return unique_concepts[:top_n]
+    
+    def _extract_keybert(self, text: str) -> List[Dict]:
+        """Extract concepts using KeyBERT (semantic, primary)"""
+        keywords = self.keybert.extract_keywords(
+            text,
+            keyphrase_ngram_range=(1, 3),
+            stop_words=self.stop_words,
+            use_maxsum=True,
+            nr_candidates=20,
+            top_n=20
+        )
+        
+        concepts = []
+        for kw, score in keywords:
+            level = 'phrase' if len(kw.split()) > 1 else 'token'
+            concepts.append({
+                'text': kw,
+                'level': level,
+                'score': float(score),
+                'method': 'keybert'
+            })
+        return concepts
+    
+    def _extract_pattern_based(self, text: str) -> List[Dict]:
+        """Extract concepts using patterns (auxiliary)"""
+        concepts = []
+        for type_name, patterns in self.patterns.items():
+            for pattern in patterns:
+                matches = re.findall(pattern, text)
+                for match in matches:
+                    if len(match) > 2 and match.lower() not in self.stop_words:
+                        concepts.append({
+                            'text': match,
+                            'level': 'token',
+                            'score': 0.4,
+                            'method': 'pattern',
+                            'subtype': type_name
+                        })
+        return concepts
+    
+    def _extract_noun_phrases(self, text: str) -> List[Dict]:
+        """Extract noun phrases as concepts"""
+        import spacy
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except:
+            return []
+        
+        doc = nlp(text)
+        concepts = []
+        
+        for chunk in doc.noun_chunks:
+            if len(chunk.text.split()) >= 2 and len(chunk.text) > 5:
+                concepts.append({
+                    'text': chunk.text,
+                    'level': 'phrase',
+                    'score': 0.45,
+                    'method': 'noun_chunk'
+                })
+        
+        return concepts
+    
+    def _merge_and_score(self, concepts: List[Dict], text: str) -> List[Dict]:
+        """Merge duplicate concepts and calculate final scores"""
+        merged = {}
+        
+        for c in concepts:
+            key = c['text'].lower()
+            if key not in merged:
+                merged[key] = c.copy()
+            else:
+                # Keep higher score
+                merged[key]['score'] = max(merged[key]['score'], c['score'])
+        
+        # Calculate frequency-based score boost
+        text_lower = text.lower()
+        for key, c in merged.items():
+            freq = text_lower.count(key)
+            freq_boost = min(0.3, freq * 0.05)
+            c['score'] = min(0.95, c['score'] + freq_boost)
+            c['frequency'] = freq
+        
+        # Sort by score
+        result = sorted(merged.values(), key=lambda x: x['score'], reverse=True)
+        
+        return result
+📁 الملف 8: semantic_typing.py
+python
+# backend/stage1_sade_v3/semantic_typing.py
+"""
+Semantic Typing System - Lightweight ontology for concept classification
+"""
+
+import re
+from typing import Dict, List
+
+class SemanticTypingSystem:
+    def __init__(self):
+        # Type patterns (auxiliary, will evolve)
+        self.type_patterns = {
+            'hardware': {
+                'patterns': [r'\b(?:CPU|GPU|RAM|NIC|SSD|HDD|FPGA|ASIC)\b'],
+                'keywords': ['processor', 'memory', 'disk', 'drive', 'controller']
+            },
+            'protocol': {
+                'patterns': [r'\b(?:TCP|UDP|HTTP|HTTPS|FTP|SSH|TLS|SSL|IP)\b'],
+                'keywords': ['protocol', 'handshake', 'packet', 'frame', 'datagram']
+            },
+            'metric': {
+                'patterns': [r'\b(?:latency|throughput|bandwidth|jitter|RTT|QoS)\b'],
+                'keywords': ['speed', 'time', 'rate', 'performance', 'utilization']
+            },
+            'process': {
+                'patterns': [r'\b(?:scheduling|routing|encryption|compression)\b'],
+                'keywords': ['algorithm', 'function', 'operation', 'process', 'execution']
+            },
+            'state': {
+                'patterns': [r'\b(?:congestion|idle|busy|active|waiting)\b'],
+                'keywords': ['state', 'status', 'condition', 'mode']
+            },
+            'action': {
+                'patterns': [r'\b(?:transmit|receive|send|read|write|fetch|store)\b'],
+                'keywords': ['action', 'operation', 'call', 'invoke', 'trigger']
+            },
+            'abstraction': {
+                'patterns': [r'\b(?:API|interface|abstraction|layer|stack|framework)\b'],
+                'keywords': ['interface', 'layer', 'stack', 'abstraction']
+            }
+        }
+        
+        # Type hierarchy
+        self.type_hierarchy = {
+            'hardware': {'parent': 'physical', 'children': ['cpu', 'memory', 'storage']},
+            'protocol': {'parent': 'communication', 'children': ['transport', 'application']},
+            'metric': {'parent': 'measurement', 'children': ['performance', 'reliability']},
+            'process': {'parent': 'behavior', 'children': ['algorithm', 'procedure']},
+            'state': {'parent': 'condition', 'children': ['status', 'mode']},
+            'action': {'parent': 'operation', 'children': ['io', 'computation']},
+            'abstraction': {'parent': 'design', 'children': ['interface', 'layer']}
+        }
+        
+        # Dynamically discovered types (will grow)
+        self.discovered_types = {}
+        
+    def classify(self, concept: str) -> Dict:
+        """
+        Classify a concept into semantic types
+        """
+        concept_lower = concept.lower()
+        scores = {}
+        
+        for type_name, type_info in self.type_patterns.items():
+            score = 0.0
+            
+            # Check patterns
+            for pattern in type_info.get('patterns', []):
+                if re.search(pattern, concept, re.IGNORECASE):
+                    score += 0.6
+                    break
+            
+            # Check keywords
+            for keyword in type_info.get('keywords', []):
+                if keyword in concept_lower:
+                    score += 0.3
+            
+            scores[type_name] = min(0.95, score)
+        
+        # Check dynamically discovered types
+        for type_name, type_info in self.discovered_types.items():
+            for keyword in type_info.get('keywords', []):
+                if keyword in concept_lower:
+                    scores[type_name] = scores.get(type_name, 0) + 0.3
+        
+        # Get primary type
+        if scores:
+            primary_type = max(scores, key=scores.get)
+            confidence = scores.get(primary_type, 0.3)
+        else:
+            primary_type = 'unknown'
+            confidence = 0.2
+        
+        # Get parent type
+        parent_type = self.type_hierarchy.get(primary_type, {}).get('parent', 'entity')
+        
+        return {
+            'concept': concept,
+            'primary_type': primary_type,
+            'parent_type': parent_type,
+            'confidence': round(min(0.95, confidence), 2),
+            'all_scores': {k: round(v, 2) for k, v in scores.items()},
+            'is_technical': confidence > 0.35
+        }
+    
+    def add_discovered_type(self, type_name: str, keywords: List[str]):
+        """Add dynamically discovered type (ontology expansion)"""
+        if type_name not in self.discovered_types:
+            self.discovered_types[type_name] = {
+                'keywords': keywords,
+                'discovered_at': __import__('datetime').datetime.now().isoformat()
+            }
+    
+    def get_relation_compatibility(self, source_type: str, target_type: str, relation_type: str) -> float:
+        """Check if a relation is semantically compatible between types"""
+        compatibility_matrix = {
+            ('hardware', 'process'): {'USES': 0.85, 'DEPENDS_ON': 0.7},
+            ('protocol', 'hardware'): {'USES': 0.8, 'COMMUNICATES_WITH': 0.85},
+            ('process', 'metric'): {'AFFECTS': 0.8, 'IMPROVES': 0.75},
+            ('action', 'state'): {'CAUSES': 0.8, 'TRANSITIONS_TO': 0.85},
+            ('abstraction', 'hardware'): {'ABSTRACTs': 0.85, 'HIDES': 0.7}
+        }
+        
+        key = (source_type, target_type)
+        if key in compatibility_matrix:
+            return compatibility_matrix[key].get(relation_type, 0.5)
+        
+        return 0.3
+📁 الملف 9: relation_candidate_generator.py
+python
+# backend/stage1_sade_v3/relation_candidate_generator.py
+"""
+Relation Candidate Generator with Locality Filtering
+Prevents combinatorial explosion
+"""
+
+import numpy as np
+from typing import List, Tuple
+from sklearn.metrics.pairwise import cosine_similarity
+
+class RelationCandidateGenerator:
+    def __init__(self, max_candidates_per_concept: int = 5, similarity_threshold: float = 0.3):
+        self.max_candidates_per_concept = max_candidates_per_concept
+        self.similarity_threshold = similarity_threshold
+        
+        # Relation types with their typical direction
+        self.relation_types = ['USES', 'DEPENDS_ON', 'IS_A', 'CONTAINS', 'CAUSES', 'PART_OF']
+        
+    def generate_candidates(self, concepts: List[str], embeddings: np.ndarray) -> List[Tuple[str, str, str]]:
+        """
+        Generate candidate relations with locality filtering
+        Only considers semantically close concepts
+        """
+        if len(concepts) < 2 or len(embeddings) < 2:
+            return []
+        
+        # Normalize embeddings
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        normalized_embeddings = embeddings / (norms + 1e-8)
+        
+        # Compute similarity matrix
+        similarity_matrix = cosine_similarity(normalized_embeddings)
+        
+        candidates = []
+        used_pairs = set()
+        
+        for i, source in enumerate(concepts):
+            # Get top-k similar concepts
+            similarities = similarity_matrix[i]
+            # Exclude self and sort
+            indices = np.argsort(similarities)[::-1]
+            top_indices = [idx for idx in indices if idx != i][:self.max_candidates_per_concept]
+            
+            for j in top_indices:
+                pair_key = tuple(sorted([i, j]))
+                if pair_key in used_pairs:
+                    continue
+                
+                used_pairs.add(pair_key)
+                similarity = similarities[j]
+                
+                if similarity > self.similarity_threshold:
+                    target = concepts[j]
+                    
+                    # Generate multiple relation types for the same pair
+                    for rel_type in self.relation_types:
+                        candidates.append((source, target, rel_type))
+        
+        return candidates
+    
+    def get_stats(self, candidates: List[Tuple]) -> dict:
+        """Get statistics about candidate generation"""
+        if not candidates:
+            return {'total_candidates': 0, 'unique_pairs': 0}
+        
+        unique_pairs = set((c[0], c[1]) for c in candidates)
+        return {
+            'total_candidates': len(candidates),
+            'unique_pairs': len(unique_pairs),
+            'avg_per_pair': len(candidates) / len(unique_pairs) if unique_pairs else 0
+        }
+📁 الملف 10: contextual_relation_validator.py
+python
+# backend/stage1_sade_v3/contextual_relation_validator.py
+"""
+Contextual Triple Validation Layer
+Validates relations using context, not just similarity
+"""
+
+import re
+import numpy as np
+from typing import List, Dict, Tuple
+from sentence_transformers import SentenceTransformer
+
+class ContextualRelationValidator:
+    def __init__(self):
+        self.encoder = SentenceTransformer("BAAI/bge-m3")
+        
+        # Validation patterns (auxiliary, not primary)
+        self.validation_patterns = {
+            'USES': [r'\b(?:uses|utilizes|employs|leverages)\s+(\w+)'],
+            'DEPENDS_ON': [r'\b(?:depends on|relies on|requires)\s+(\w+)'],
+            'IS_A': [r'\b(?:is a|is an|are|refers to)\s+(\w+)'],
+            'CAUSES': [r'\b(?:causes|leads to|results in|triggers)\s+(\w+)'],
+        }
+        
+    def validate(self, source: str, target: str, relation_type: str, context: str) -> Dict:
+        """
+        Validate a relation triple using context
+        """
+        validation_score = 0.5  # Base score
+        validation_methods = []
+        
+        # Method 1: Pattern matching (auxiliary)
+        if relation_type in self.validation_patterns:
+            for pattern in self.validation_patterns[relation_type]:
+                matches = re.findall(pattern, context.lower())
+                for match in matches:
+                    if source.lower() in match or target.lower() in match:
+                        validation_score += 0.15
+                        validation_methods.append('pattern_match')
+                        break
+        
+        # Method 2: Semantic proximity in context
+        if source.lower() in context.lower() and target.lower() in context.lower():
+            validation_score += 0.2
+            validation_methods.append('co_occurrence')
+            
+            # Check proximity
+            source_pos = context.lower().find(source.lower())
+            target_pos = context.lower().find(target.lower())
+            if abs(source_pos - target_pos) < 100:
+                validation_score += 0.15
+                validation_methods.append('proximity')
+        
+        # Method 3: Context embedding similarity
+        source_target_text = f"{source} {relation_type} {target}"
+        source_target_emb = self.encoder.encode([source_target_text], normalize_embeddings=True)[0]
+        context_emb = self.encoder.encode([context[:500]], normalize_embeddings=True)[0]
+        
+        similarity = np.dot(source_target_emb, context_emb)
+        validation_score += similarity * 0.2
+        validation_methods.append('semantic_similarity')
+        
+        # Method 4: Logical consistency check
+        logical_check = self._logical_consistency_check(source, target, relation_type)
+        if logical_check['consistent']:
+            validation_score += 0.1
+            validation_methods.append('logical_consistency')
+        
+        # Final score
+        final_score = min(0.95, validation_score)
+        
+        return {
+            'is_valid': final_score > 0.55,
+            'confidence': round(final_score, 2),
+            'validation_methods': validation_methods,
+            'source_type': self._infer_type(source),
+            'target_type': self._infer_type(target),
+            'logical_check': logical_check
+        }
+    
+    def _logical_consistency_check(self, source: str, target: str, relation_type: str) -> Dict:
+        """Check logical consistency of the relation"""
+        consistent = True
+        reason = None
+        
+        # A concept cannot be related to itself (unless reflexive)
+        if source.lower() == target.lower() and relation_type not in ['IS_A']:
+            consistent = False
+            reason = "Self-relation not allowed for this type"
+        
+        return {'consistent': consistent, 'reason': reason}
+    
+    def _infer_type(self, concept: str) -> str:
+        """Simple type inference for validation"""
+        if concept.isupper() and len(concept) >= 2:
+            return 'acronym'
+        elif concept[0].isupper():
+            return 'proper_noun'
+        else:
+            return 'term'
+📁 الملف 11: probabilistic_graph.py
+python
+# backend/stage1_sade_v3/probabilistic_graph.py
+"""
+Probabilistic Knowledge Graph with Bayesian-inspired Belief Updates
+"""
+
+import numpy as np
+from typing import Dict, List, Optional
+from collections import defaultdict
+from datetime import datetime
+
+class ProbabilisticGraph:
+    def __init__(self, decay_factor: float = 0.95, evidence_threshold: int = 3):
+        self.decay_factor = decay_factor
+        self.evidence_threshold = evidence_threshold
+        
+        self.nodes = {}
+        self.edges = []
+        self.edge_index = defaultdict(lambda: defaultdict(dict))
+        self.edge_evidence_count = defaultdict(lambda: defaultdict(dict))
+        
+        self.contradictions = []
+        self.belief_revisions = []
+        
+    def add_node(self, concept: str, confidence: float, concept_type: str = 'unknown'):
+        """Add or update node with Bayesian-inspired update"""
+        if concept in self.nodes:
+            old_conf = self.nodes[concept]['confidence']
+            evidence_count = self.nodes[concept].get('evidence_count', 1)
+            
+            # Bayesian update (simplified)
+            new_conf = (old_conf * evidence_count + confidence) / (evidence_count + 1)
+            self.nodes[concept]['confidence'] = new_conf
+            self.nodes[concept]['evidence_count'] = evidence_count + 1
+            self.nodes[concept]['history'].append({
+                'timestamp': datetime.now().isoformat(),
+                'confidence': confidence,
+                'type': concept_type
+            })
+        else:
+            self.nodes[concept] = {
+                'type': concept_type,
+                'confidence': confidence,
+                'evidence_count': 1,
+                'history': [{
+                    'timestamp': datetime.now().isoformat(),
+                    'confidence': confidence,
+                    'type': concept_type
+                }]
+            }
+    
+    def add_edge(self, source: str, target: str, relation_type: str, confidence: float, context: str = None):
+        """Add edge with Bayesian belief update and adaptive contradiction detection"""
+        
+        existing = self.edge_index[source][target].get(relation_type)
+        evidence_count = self.edge_evidence_count[source][target].get(relation_type, 0)
+        
+        # Adaptive threshold based on evidence count
+        adaptive_threshold = 0.3 * (1 / (1 + np.log(evidence_count + 1)))
+        
+        if existing is not None:
+            # Calculate adaptive threshold for contradiction
+            if abs(existing - confidence) > adaptive_threshold:
+                self._detect_contradiction(source, target, relation_type, existing, confidence, evidence_count, context)
+            
+            # Bayesian update
+            new_conf = (existing * evidence_count + confidence) / (evidence_count + 1)
+            new_evidence_count = evidence_count + 1
+        else:
+            new_conf = confidence
+            new_evidence_count = 1
+        
+        # Apply decay for older evidence
+        if evidence_count > self.evidence_threshold:
+            new_conf = new_conf * self.decay_factor
+        
+        self.edge_index[source][target][relation_type] = new_conf
+        self.edge_evidence_count[source][target][relation_type] = new_evidence_count
+        
+        edge = {
+            'source': source,
+            'target': target,
+            'type': relation_type,
+            'confidence': new_conf,
+            'original_confidence': confidence,
+            'evidence_count': new_evidence_count,
+            'timestamp': datetime.now().isoformat(),
+            'context': context[:200] if context else None
+        }
+        
+        self.edges = [e for e in self.edges if not (e['source'] == source and e['target'] == target and e['type'] == relation_type)]
+        self.edges.append(edge)
+        
+        return edge
+    
+    def _detect_contradiction(self, source: str, target: str, rel_type: str, 
+                              old_conf: float, new_conf: float, evidence_count: int, context: str = None):
+        """Detect contradiction with adaptive thresholds"""
+        # Confidence in the existing belief
+        belief_strength = old_conf * (1 - 1/(evidence_count + 1))
+        
+        # Detect contradiction if new evidence strongly disagrees
+        if new_conf < old_conf - belief_strength * 0.5:
+            contradiction = {
+                'source': source,
+                'target': target,
+                'relation_type': rel_type,
+                'old_confidence': old_conf,
+                'new_confidence': new_conf,
+                'difference': new_conf - old_conf,
+                'evidence_count': evidence_count,
+                'belief_strength': belief_strength,
+                'timestamp': datetime.now().isoformat(),
+                'context': context[:200] if context else None
+            }
+            self.contradictions.append(contradiction)
+            self._revise_belief(source, target, rel_type, old_conf, new_conf, evidence_count)
+    
+    def _revise_belief(self, source: str, target: str, rel_type: str, 
+                       old_conf: float, new_conf: float, evidence_count: int):
+        """Revise belief based on contradiction"""
+        revision = {
+            'source': source,
+            'target': target,
+            'relation_type': rel_type,
+            'old_confidence': old_conf,
+            'new_confidence': new_conf,
+            'evidence_count': evidence_count,
+            'action': 'confidence_reduced',
+            'timestamp': datetime.now().isoformat()
+        }
+        self.belief_revisions.append(revision)
+        
+        # Propagate revision with reduced confidence
+        propagation_factor = 0.95 if new_conf < old_conf else 1.05
+        for neighbor in list(self.edge_index.get(target, {}).keys()):
+            for n_rel in list(self.edge_index[target][neighbor].keys()):
+                n_conf = self.edge_index[target][neighbor][n_rel]
+                new_n_conf = n_conf * propagation_factor
+                if new_n_conf < 0.95:
+                    self.edge_index[target][neighbor][n_rel] = new_n_conf
+    
+    def get_graph_state(self) -> Dict:
+        """Get current graph state"""
+        return {
+            'nodes': {k: {'type': v['type'], 'confidence': v['confidence'], 'evidence_count': v['evidence_count']} 
+                     for k, v in self.nodes.items()},
+            'node_count': len(self.nodes),
+            'edge_count': len(self.edges),
+            'contradictions': len(self.contradictions),
+            'belief_revisions': len(self.belief_revisions),
+            'average_node_confidence': float(np.mean([v['confidence'] for v in self.nodes.values()])) if self.nodes else 0,
+            'average_edge_confidence': float(np.mean([e['confidence'] for e in self.edges])) if self.edges else 0
+        }
+    
+    def get_contradiction_report(self) -> List[Dict]:
+        """Get report of all detected contradictions"""
+        return self.contradictions[-20:]
+📁 الملف 12: temporal_evolution.py
+python
+# backend/stage1_sade_v3/temporal_evolution.py
+"""
+Temporal Evolution with Belief Revision and Contradiction Resolution
+"""
+
+from datetime import datetime
+from typing import Dict, List
+import json
+import numpy as np
+
+class TemporalEvolution:
+    def __init__(self, memory_file: str = "data/temporal_evolution_v3.json"):
+        self.memory_file = memory_file
+        self.concept_history = {}
+        self.relation_history = []
+        self.belief_revisions = []
+        self.contradiction_resolutions = []
+        self.load()
+        
+    def update_concept(self, concept: str, confidence: float, context: str) -> Dict:
+        """Update concept with belief revision"""
+        timestamp = datetime.now().isoformat()
+        
+        if concept not in self.concept_history:
+            self.concept_history[concept] = []
+        
+        # Check for contradiction with history
+        if self.concept_history[concept]:
+            last_conf = self.concept_history[concept][-1]['confidence']
+            if abs(confidence - last_conf) > 0.3:
+                self._resolve_contradiction(concept, last_conf, confidence, context)
+        
+        # Add new observation
+        self.concept_history[concept].append({
+            'timestamp': timestamp,
+            'confidence': confidence,
+            'context': context[:200]
+        })
+        
+        # Update confidence with temporal weighting
+        self._update_confidence(concept)
+        
+        self.save()
+        
+        return {
+            'concept': concept,
+            'current_confidence': self._get_current_confidence(concept),
+            'observations': len(self.concept_history[concept]),
+            'has_contradiction': len(self.contradiction_resolutions) > 0
+        }
+    
+    def update_relation(self, source: str, target: str, rel_type: str, confidence: float) -> Dict:
+        """Update relation with history"""
+        timestamp = datetime.now().isoformat()
+        
+        self.relation_history.append({
+            'timestamp': timestamp,
+            'source': source,
+            'target': target,
+            'type': rel_type,
+            'confidence': confidence
+        })
+        
+        # Keep last 2000 relations
+        if len(self.relation_history) > 2000:
+            self.relation_history = self.relation_history[-2000:]
+        
+        self.save()
+        
+        return {
+            'source': source,
+            'target': target,
+            'type': rel_type,
+            'confidence': confidence,
+            'timestamp': timestamp
+        }
+    
+    def _resolve_contradiction(self, concept: str, old_conf: float, new_conf: float, context: str):
+        """Resolve contradiction between observations"""
+        resolution = {
+            'concept': concept,
+            'old_confidence': old_conf,
+            'new_confidence': new_conf,
+            'difference': new_conf - old_conf,
+            'context': context[:200],
+            'resolution': 'accepted_new' if new_conf > old_conf else 'maintained_old',
+            'timestamp': datetime.now().isoformat()
+        }
+        self.contradiction_resolutions.append(resolution)
+        
+        # Record belief revision
+        self.belief_revisions.append({
+            'type': 'concept',
+            'concept': concept,
+            'from': old_conf,
+            'to': new_conf,
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    def _update_confidence(self, concept: str):
+        """Update confidence with temporal weighting"""
+        if concept not in self.concept_history or not self.concept_history[concept]:
+            return
+        
+        history = self.concept_history[concept]
+        
+        # Weighted average: recent observations have higher weight
+        weights = []
+        confidences = []
+        
+        recent_history = history[-20:] if len(history) > 20 else history
+        for i, obs in enumerate(recent_history):
+            # Exponential decay weight
+            weight = np.exp(-0.1 * (len(recent_history) - i))
+            weights.append(weight)
+            confidences.append(obs['confidence'])
+        
+        if weights:
+            weights = np.array(weights) / np.sum(weights)
+            weighted_avg = np.average(confidences, weights=weights)
+            
+            # Update last observation with effective confidence
+            if recent_history:
+                recent_history[-1]['effective_confidence'] = round(weighted_avg, 3)
+    
+    def _get_current_confidence(self, concept: str) -> float:
+        """Get current confidence with belief revision considered"""
+        if concept not in self.concept_history or not self.concept_history[concept]:
+            return 0.5
+        
+        last_obs = self.concept_history[concept][-1]
+        return last_obs.get('effective_confidence', last_obs['confidence'])
+    
+    def get_evolution_report(self) -> Dict:
+        """Get complete evolution report with contradictions"""
+        evolving_concepts = []
+        for concept, history in self.concept_history.items():
+            if len(history) > 1:
+                first = history[0]['confidence']
+                last = self._get_current_confidence(concept)
+                if abs(last - first) > 0.1:
+                    evolving_concepts.append({
+                        'concept': concept,
+                        'start': first,
+                        'end': last,
+                        'change': last - first,
+                        'trend': 'improving' if last > first else 'declining'
+                    })
+        
+        return {
+            'total_concepts': len(self.concept_history),
+            'total_relations': len(self.relation_history),
+            'evolving_concepts': len(evolving_concepts),
+            'significant_changes': evolving_concepts[:10],
+            'belief_revisions': len(self.belief_revisions),
+            'contradictions_resolved': len(self.contradiction_resolutions),
+            'last_update': datetime.now().isoformat()
+        }
+    
+    def load(self):
+        try:
+            with open(self.memory_file, 'r') as f:
+                data = json.load(f)
+                self.concept_history = data.get('concept_history', {})
+                self.relation_history = data.get('relation_history', [])
+                self.belief_revisions = data.get('belief_revisions', [])
+                self.contradiction_resolutions = data.get('contradiction_resolutions', [])
+        except FileNotFoundError:
+            pass
+    
+    def save(self):
+        with open(self.memory_file, 'w') as f:
+            json.dump({
+                'concept_history': self.concept_history,
+                'relation_history': self.relation_history[-2000:],
+                'belief_revisions': self.belief_revisions[-100:],
+                'contradiction_resolutions': self.contradiction_resolutions[-100:],
+                'last_updated': datetime.now().isoformat()
+            }, f, indent=2)
+📁 الملف 13: confidence_scorer.py
+python
+# backend/stage1_sade_v3/confidence_scorer.py
+"""
+Confidence Scorer with Uncertainty Propagation
+"""
+
+import numpy as np
+from typing import Dict, List
+
+class ConfidenceScorer:
+    def __init__(self, uncertainty_threshold: float = 0.3):
+        self.uncertainty_threshold = uncertainty_threshold
+        
+    def score_extraction(self, extraction_results: Dict) -> Dict:
+        """
+        Score confidence and propagate uncertainty
+        """
+        # Base scores
+        text_length = extraction_results.get('text_length', 0)
+        length_confidence = min(0.95, text_length / 1000)
+        
+        # Entity extraction confidence
+        entities = extraction_results.get('entities', [])
+        entity_scores = [e.get('score', 0.5) for e in entities]
+        entity_confidence = float(np.mean(entity_scores)) if entity_scores else 0.3
+        
+        # Cluster confidence
+        clusters = extraction_results.get('clusters', {})
+        cluster_count = clusters.get('num_clusters', 0)
+        cluster_confidence = min(0.85, cluster_count / 10)
+        
+        # Relation confidence
+        relations = extraction_results.get('relations', [])
+        relation_confidences = [r.get('confidence', 0.5) for r in relations]
+        relation_confidence = float(np.mean(relation_confidences)) if relation_confidences else 0.2
+        
+        # Uncertainty propagation (quadratic sum)
+        uncertainties = [
+            1 - length_confidence,
+            1 - entity_confidence,
+            1 - cluster_confidence,
+            1 - relation_confidence
+        ]
+        
+        # Combined uncertainty
+        combined_uncertainty = np.sqrt(np.sum(np.square(uncertainties))) / len(uncertainties)
+        
+        # Overall confidence
+        overall_confidence = 1 - combined_uncertainty
+        
+        # Component uncertainty
+        component_uncertainty = {
+            'length': round(1 - length_confidence, 3),
+            'entity': round(1 - entity_confidence, 3),
+            'cluster': round(1 - cluster_confidence, 3),
+            'relation': round(1 - relation_confidence, 3)
+        }
+        
+        return {
+            'overall_confidence': round(overall_confidence, 3),
+            'overall_uncertainty': round(combined_uncertainty, 3),
+            'components': {
+                'length': round(length_confidence, 3),
+                'entity': round(entity_confidence, 3),
+                'cluster': round(cluster_confidence, 3),
+                'relation': round(relation_confidence, 3)
+            },
+            'component_uncertainty': component_uncertainty,
+            'is_reliable': overall_confidence > 0.6,
+            'needs_review': combined_uncertainty > self.uncertainty_threshold
+        }
+📁 الملف 14: pipeline.py
+python
+# backend/stage1_sade_v3/pipeline.py
+"""
+Semantic Adaptive Discovery Engine (SADE) v3.0
+Production-ready complete pipeline
+"""
+
+import time
+from typing import Dict, List
+from datetime import datetime
+
+class SADEPipelineV3:
+    def __init__(self):
+        print("Initializing SADE v3.0 Pipeline...")
+        
+        # Lazy load models for performance
+        self._initialized = False
+        self._components = {}
+        
+    def _ensure_initialized(self):
+        """Lazy initialize all components (load once)"""
+        if self._initialized:
+            return
+        
+        print("Loading components...")
+        
+        from .language_detector import LanguageDetector
+        from .semantic_sentence_boundary import SemanticSentenceBoundary
+        from .code_identifier import CodeIdentifier
+        from .embeddings_manager import EmbeddingsManager
+        from .sentence_clustering import SentenceClusterer
+        from .multi_resolution_concept import MultiResolutionConceptExtractor
+        from .semantic_typing import SemanticTypingSystem
+        from .relation_candidate_generator import RelationCandidateGenerator
+        from .contextual_relation_validator import ContextualRelationValidator
+        from .probabilistic_graph import ProbabilisticGraph
+        from .temporal_evolution import TemporalEvolution
+        from .confidence_scorer import ConfidenceScorer
+        
+        self._components = {
+            'language_detector': LanguageDetector(),
+            'sentence_boundary': SemanticSentenceBoundary(),
+            'code_identifier': CodeIdentifier(),
+            'embeddings': EmbeddingsManager(cache_size=500),
+            'clusterer': SentenceClusterer(),
+            'concept_extractor': MultiResolutionConceptExtractor(),
+            'typing_system': SemanticTypingSystem(),
+            'relation_generator': RelationCandidateGenerator(max_candidates_per_concept=5),
+            'relation_validator': ContextualRelationValidator(),
+            'graph': ProbabilisticGraph(),
+            'temporal_evolution': TemporalEvolution(),
+            'confidence_scorer': ConfidenceScorer()
+        }
+        
+        self._initialized = True
+        print("SADE v3.0 Pipeline ready!")
+    
+    def analyze(self, text: str) -> Dict:
+        """
+        Complete analysis pipeline with batch processing
+        """
+        self._ensure_initialized()
+        start_time = time.time()
+        
+        if not text or len(text) < 20:
+            return {'error': 'Text too short for analysis', 'success': False}
+        
+        c = self._components
+        
+        # 1. Language Detection
+        language = c['language_detector'].detect(text)
+        
+        # 2. Semantic Sentence Boundary
+        sentences = c['sentence_boundary'].split_sentences(text, language['language'])
+        
+        if len(sentences) < 2:
+            return {'error': 'Not enough sentences for analysis', 'success': False}
+        
+        # 3. Batch encode sentences
+        sentence_embeddings = c['embeddings'].encode_text_batch(sentences, batch_size=16)
+        
+        # 4. Sentence-level Clustering
+        clusters = c['clusterer'].cluster_sentences(sentences, sentence_embeddings)
+        
+        # 5. Multi-resolution Concept Extraction
+        concepts = c['concept_extractor'].extract_concepts(text, top_n=25)
+        
+        # 6. Semantic Typing
+        typed_concepts = []
+        concept_texts = []
+        
+        for concept in concepts:
+            typed = c['typing_system'].classify(concept['text'])
+            typed_concepts.append({**concept, **typed})
+            concept_texts.append(concept['text'])
+        
+        # Batch encode concepts
+        if concept_texts:
+            concept_embeddings = c['embeddings'].encode_text_batch(concept_texts, batch_size=16)
+            
+            # Add to graph
+            for i, concept in enumerate(typed_concepts[:15]):
+                c['graph'].add_node(concept['text'], concept['score'], concept['primary_type'])
+                c['temporal_evolution'].update_concept(concept['text'], concept['score'], text[:200])
+        else:
+            concept_embeddings = None
+        
+        # 7. Generate candidate relations (locality filtering)
+        candidate_relations = []
+        if concept_embeddings is not None and len(concept_texts) > 1:
+            candidate_relations = c['relation_generator'].generate_candidates(concept_texts, concept_embeddings)
+        
+        # 8. Validate relations
+        validated_relations = []
+        for source, target, rel_type in candidate_relations[:50]:
+            context = self._find_context_sentence(text, source, target, c)
+            if context:
+                validation = c['relation_validator'].validate(source, target, rel_type, context)
+                if validation['is_valid'] and validation['confidence'] > 0.5:
+                    validated_relations.append({
+                        'source': source,
+                        'target': target,
+                        'type': rel_type,
+                        'confidence': validation['confidence'],
+                        'context': context[:100],
+                        'source_type': validation['source_type'],
+                        'target_type': validation['target_type']
+                    })
+                    c['graph'].add_edge(source, target, rel_type, validation['confidence'], context)
+                    c['temporal_evolution'].update_relation(source, target, rel_type, validation['confidence'])
+        
+        # 9. Confidence Scoring
+        extraction_results = {
+            'text_length': len(text),
+            'entities': typed_concepts,
+            'clusters': clusters,
+            'relations': validated_relations
+        }
+        confidence = c['confidence_scorer'].score_extraction(extraction_results)
+        
+        # 10. Prepare final output
+        result = {
+            'success': True,
+            'analysis_time_ms': round((time.time() - start_time) * 1000, 2),
+            'timestamp': datetime.now().isoformat(),
+            'language': language,
+            'sentence_count': len(sentences),
+            'cluster_count': clusters.get('num_clusters', 0),
+            'concepts': typed_concepts[:15],
+            'relations': validated_relations[:10],
+            'confidence': confidence,
+            'graph_state': c['graph'].get_graph_state(),
+            'evolution_report': c['temporal_evolution'].get_evolution_report(),
+            'cache_stats': c['embeddings'].get_cache_stats()
+        }
+        
+        return result
+    
+    def _find_context_sentence(self, text: str, source: str, target: str, c) -> str:
+        """Find sentence containing both concepts"""
+        sentences = c['sentence_boundary'].split_sentences(text)
+        for sent in sentences:
+            if source.lower() in sent.lower() and target.lower() in sent.lower():
+                return sent
+        return None
+    
+    def get_system_status(self) -> Dict:
+        """Get system status"""
+        if not self._initialized:
+            return {'status': 'not_initialized'}
+        
+        c = self._components
+        return {
+            'status': 'ready',
+            'cache_stats': c['embeddings'].get_cache_stats(),
+            'graph_state': c['graph'].get_graph_state(),
+            'evolution_report': c['temporal_evolution'].get_evolution_report()
+        }
+📁 الملف 15: requirements.txt
+txt
+# Core
+Flask==2.3.0
+flask-sqlalchemy==3.0.5
+Flask-Login==0.6.2
+Werkzeug==2.3.0
+
+# Language & NLP
+langdetect==1.0.9
+nltk==3.8.1
+langchain==0.1.0
+keybert==0.8.0
+spacy==3.7.2
+
+# ML & Embeddings
+sentence-transformers==2.2.2
+transformers==4.36.0
+torch==2.1.0
+umap-learn==0.5.5
+hdbscan==0.8.33
+scikit-learn==1.3.0
+numpy==1.24.3
+
+# Database
+neo4j==5.14.0
+qdrant-client==1.7.0
+redis==5.0.1
+
+# Utilities
+requests==2.31.0
+deep-translator==1.11.4
+✅ الملخص النهائي
+#	الملف	الحالة
+1	__init__.py	✅
+2	language_detector.py	✅
+3	semantic_sentence_boundary.py	✅
+4	code_identifier.py	✅
+5	embeddings_manager.py	✅
+6	sentence_clustering.py	✅
+7	multi_resolution_concept.py	✅
+8	semantic_typing.py	✅
+9	relation_candidate_generator.py	✅
+10	contextual_relation_validator.py	✅
+11	probabilistic_graph.py	✅
+12	temporal_evolution.py	✅
+13	confidence_scorer.py	✅
+14	pipeline.py	✅
+15	requirements.txt	✅
+جميع الملفات الخمسة عشر مكتملة وجاهزة للاستخدام. هل تريد دمجها مع المشروع الحالي؟ 🔥

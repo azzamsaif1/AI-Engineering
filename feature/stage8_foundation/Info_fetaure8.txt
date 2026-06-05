@@ -1,0 +1,505 @@
+مشروعي 
+📚 الدراسة البحثية - الجزء الثامن
+البيئة المعرفية الهندسية التكيفية (Adaptive Cognitive Engineering Environment)
+🎯 الملخص التنفيذي للجزء الثامن
+هذا الجزء يمثل البيئة المتكاملة النهائية التي تجمع كل ما سبق في واجهة حية متكيفة:
+
+بيئة هندسية كاملة (وليست مجرد IDE)
+
+تفهم المستخدم لحظياً عبر الحواس المتعددة
+
+تتكيف مع الموضوع الحالي وتعيد تشكيل نفسها تلقائياً
+
+تمنع التشتت وتظهر فقط المعلومات ذات الصلة
+
+تصبح امتداداً للعقل الهندسي نفسه
+
+🏗️ المعمارية المتكاملة للبيئة المعرفية
+text
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    TECH LINGUA MENTOR - الجزء الثامن                           │
+│           البيئة المعرفية الهندسية التكيفية (Adaptive Cognitive Environment)    │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                         واجهة البيئة المعرفية                              │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │  محرر حي    │ │  بصري حي   │ │  تركيز حي  │ │  تكيف حي   │         │  │
+│  │  │ (Monaco)    │ │ (Timeline) │ │ (Focus)    │ │ (Adaptive) │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                      ↓                                          │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                      طبقة التنسيق اللحظي (Orchestration)                   │  │
+│  │  ┌─────────────────────────────────────────────────────────────────────┐  │  │
+│  │  │  Kafka  │  Redis Streams  │  Fluss  │  WebSocket  │  Event Bus      │  │  │
+│  │  └─────────────────────────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                      ↓                                          │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                      طبقة الحواس (Senses Layer)                            │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │    السمع    │ │    البصر    │ │  قراءة الكود │ │    السلوك    │         │  │
+│  │  │  (Hearing)  │ │  (Vision)   │ │   (Code)    │ │ (Behavior)  │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                      ↓                                          │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                   طبقة الذاكرة والمعرفة (Memory & Knowledge)               │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │   Qdrant    │ │    Neo4j    │ │   Fluss    │ │  Weaviate   │         │  │
+│  │  │ (Semantic)  │ │(Relational) │ │ (Episodic) │ │  (Search)   │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                      ↓                                          │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                   طبقة الاستدلال والتفكير (Reasoning)                      │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │ DeepSeek R1 │ │Qwen Reason. │ │  LangGraph  │ │  Agents     │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                      ↓                                          │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                   طبقة التكيف والتركيز (Adaptation)                        │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │ Context    │ │   Focus     │ │  Workflow   │ │   Layout    │         │  │
+│  │  │ Analyzer   │ │  Tracker    │ │  Optimizer  │ │  Adapter    │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+📊 الجدول الزمني للجزء الثامن (أسابيع 141-160)
+المرحلة	الأسبوع	المهمة	الأدوات	المخرجات
+1	141-142	بناء الواجهة الأساسية	Tauri/Electron, Monaco	بيئة قابلة للتشغيل
+2	143-144	دمج الحواس	Whisper, Qwen-VL, MediaPipe	إدخال متعدد الوسائط
+3	145-146	نظام التنسيق اللحظي	Kafka, Redis Streams	تدفق بيانات فوري
+4	147-148	الذاكرة والمعرفة	Qdrant, Neo4j	نظام ذاكرة متكامل
+5	149-150	الاستدلال والتفكير	DeepSeek R1, LangGraph	عقل البيئة
+6	151-152	التكيف والتركيز	Context Analyzer	واجهة متكيفة
+7	153-154	منع التشتت	Focus Tracker	تحسين الإنتاجية
+8	155-156	التكامل الكامل	All components	بيئة متكاملة
+9	157-158	الاختبار والتقييم	User Testing	نظام جاهز
+10	159-160	التوثيق والإطلاق	Docs, Distribution	إصدار كامل
+🛠️ الأدوات والمكتبات للجزء الثامن (القائمة الكاملة)
+المجموعة 1: الواجهة الأساسية (Core Interface)
+#	الأداة	الاستخدام	المرونة	الصعوبة	التوصية
+1	Tauri	بناء تطبيق سطح مكتب خفيف	عالية	🟡 متوسط	⭐⭐⭐⭐⭐
+2	Electron	بديل Tauri (أثقل)	عالية	🟢 سهل	⭐⭐⭐⭐
+3	Monaco Editor	محرر VS Code	عالية جداً	🟡 متوسط	⭐⭐⭐⭐⭐
+4	WebSocket	اتصال لحظي	عالية	🟢 سهل	⭐⭐⭐⭐⭐
+المجموعة 2: الحواس (Senses)
+#	الأداة	الاستخدام	الدقة	الصعوبة	التوصية
+1	Whisper Large	تحويل الصوت إلى نص	95%+	🟡 متوسط	⭐⭐⭐⭐⭐
+2	Streaming ASR	كلام لحظي	90%+	🔴 صعب	⭐⭐⭐⭐⭐
+3	Qwen-VL	فهم الصور والشاشة	90%+	🟡 متوسط	⭐⭐⭐⭐⭐
+4	MediaPipe	تتبع العين والوجه	95%+	🟢 سهل	⭐⭐⭐⭐⭐
+5	Tree-sitter	تحليل الكود اللحظي	100%	🟢 سهل	⭐⭐⭐⭐⭐
+المجموعة 3: التنسيق اللحظي (Orchestration)
+#	الأداة	الاستخدام	الإنتاجية	الصعوبة	التوصية
+1	Kafka	وسيط رسائل موزع	1M+ msg/s	🟡 متوسط	⭐⭐⭐⭐⭐
+2	Redis Streams	معالجة فورية	100K+ msg/s	🟢 سهل	⭐⭐⭐⭐
+3	Fluss	تخزين دفق	40GB/s	🟡 متوسط	⭐⭐⭐⭐⭐
+4	WebSocket	اتصال ثنائي الاتجاه	عالية	🟢 سهل	⭐⭐⭐⭐⭐
+المجموعة 4: التكيف والتركيز (Adaptation)
+#	الأداة	الاستخدام	الدقة	الصعوبة	التوصية
+1	Context Analyzer	تحليل السياق	عالية	🔴 صعب	⭐⭐⭐⭐⭐
+2	Focus Tracker	تتبع التركيز	85%+	🟡 متوسط	⭐⭐⭐⭐⭐
+3	Workflow Optimizer	تحسين سير العمل	عالية	🔴 صعب	⭐⭐⭐⭐
+4	Layout Adapter	تكيف الواجهة	تلقائي	🟡 متوسط	⭐⭐⭐⭐⭐
+🔬 تفاصيل كل طبقة - الجزء الثامن
+الطبقة: الواجهة المعرفية (Cognitive Interface)
+python
+# backend/interface/cognitive_interface.py
+from monaco import MonacoEditor
+import asyncio
+from typing import Dict, Any
+
+class CognitiveInterface:
+    def __init__(self):
+        # محرر Monaco
+        self.editor = MonacoEditor()
+        self.editor.on('change', self._on_code_change)
+        self.editor.on('selection', self._on_selection)
+        
+        # عناصر الواجهة
+        self.panels = {
+            'code': {'visible': True, 'position': 'center'},
+            'visualization': {'visible': False, 'position': 'right'},
+            'terminal': {'visible': True, 'position': 'bottom'},
+            'context': {'visible': True, 'position': 'left'},
+            'focus': {'visible': False, 'position': 'top'}
+        }
+        
+        # السياق الحالي
+        self.current_context = {
+            'topic': None,
+            'language': 'python',
+            'project': None,
+            'focus_level': 0.8
+        }
+        function text **** one and the ste- two uhh
+    async def _on_code_change(self, code: str) -> None:
+        """استجابة لتغيير الكود"""
+        # تحليل السياق الجديد
+        new_context = await self._analyze_context(code)
+        
+        if new_context != self.current_context:
+            self.current_context = new_context
+            await self._adapt_interface(new_context)
+    
+    async def _adapt_interface(self, context: Dict) -> None:
+        """تكيف الواجهة مع السياق الجديد"""
+        topic = context.get('topic', 'general')
+        
+        # تحديد التخطيط المناسب للموضوع
+        layout = self._get_layout_for_topic(topic)
+        
+        # تحديث الواجهة
+        for panel, config in layout.items():
+            if panel in self.panels:
+                self.panels[panel]['visible'] = config.get('visible', False)
+                self.panels[panel]['position'] = config.get('position', 'center')
+        
+        # إعادة ترتيب الواجهة
+        await self._rearrange_interface()
+        
+        # تحديث الأدوات حسب الموضوع
+        await self._update_tools(context)
+    
+    def _get_layout_for_topic(self, topic: str) -> Dict:
+        """الحصول على تخطيط مناسب للموضوع"""
+        layouts = {
+            'lowlevel': {
+                'code': {'visible': True, 'position': 'center'},
+                'visualization': {'visible': True, 'position': 'right'},
+                'terminal': {'visible': True, 'position': 'bottom'},
+                'context': {'visible': True, 'position': 'left'},
+                'memory': {'visible': True, 'position': 'right-bottom'}
+            },
+            'networking': {
+                'code': {'visible': True, 'position': 'center'},
+                'visualization': {'visible': True, 'position': 'right'},
+                'packet_trace': {'visible': True, 'position': 'bottom'},
+                'protocols': {'visible': True, 'position': 'left'}
+            },
+            'ml': {
+                'code': {'visible': True, 'position': 'center'},
+                'visualization': {'visible': True, 'position': 'right'},
+                'tensor_board': {'visible': True, 'position': 'bottom'},
+                'metrics': {'visible': True, 'position': 'left'}
+            },
+            'web': {
+                'code': {'visible': True, 'position': 'center'},
+                'preview': {'visible': True, 'position': 'right'},
+                'console': {'visible': True, 'position': 'bottom'},
+                'network': {'visible': True, 'position': 'left'}
+            }
+        }
+        
+        return layouts.get(topic, layouts['lowlevel'])
+    
+    async def _update_tools(self, context: Dict) -> None:
+        """تحديث الأدوات حسب السياق"""
+        topic = context.get('topic', 'general')
+        
+        # أدوات Low-Level
+        if topic == 'lowlevel':
+            await self._show_memory_visualization()
+            await self._show_performance_profiler()
+            await self._show_assembly_view()
+        
+        # أدوات Networking
+        elif topic == 'networking':
+            await self._show_packet_analyzer()
+            await self._show_protocol_diagram()
+            await self._show_socket_monitor()
+        
+        # أدوات ML
+        elif topic == 'ml':
+            await self._show_tensor_visualizer()
+            await self._show_training_metrics()
+            await self._show_model_graph()
+الطبقة: منع التشتت والتركيز (Focus & Distraction Prevention)
+python
+# backend/interface/focus_manager.py
+import time
+from collections import deque
+import numpy as np
+
+class FocusManager:
+    def __init__(self):
+        self.focus_history = deque(maxlen=1000)
+        self.distractions = []
+        self.current_focus_score = 0.8
+        self.last_interaction = time.time()
+        self.interaction_times = []
+        
+        # عتبات التشتت
+        self.distraction_thresholds = {
+            'eye_movement': 0.7,      # حركة عين عالية
+            'tab_switches': 5,         # تبديل تبويبات كثير
+            'pause_time': 30,          # توقف طويل
+            'scroll_speed': 0.8,       # تمرير سريع
+            'typing_errors': 0.3       # أخطاء كتابة كثيرة
+        }
+        
+    async def update_focus(self, metrics: Dict) -> float:
+        """تحديث درجة التركيز بناءً على المقاييس"""
+        # حساب درجة التركيز
+        focus_score = 1.0
+        
+        if metrics.get('eye_movement', 0) > self.distraction_thresholds['eye_movement']:
+            focus_score -= 0.2
+        
+        if metrics.get('tab_switches', 0) > self.distraction_thresholds['tab_switches']:
+            focus_score -= 0.15
+        
+        pause_time = time.time() - self.last_interaction
+        if pause_time > self.distraction_thresholds['pause_time']:
+            focus_score -= min(0.5, pause_time / 60)
+        
+        if metrics.get('typing_errors', 0) > self.distraction_thresholds['typing_errors']:
+            focus_score -= 0.1
+        
+        self.current_focus_score = max(0.0, min(1.0, focus_score))
+        self.focus_history.append({
+            'timestamp': time.time(),
+            'score': self.current_focus_score,
+            'metrics': metrics
+        })
+        
+        self.last_interaction = time.time()
+        self.interaction_times.append(self.last_interaction)
+        
+        # التحقق من الحاجة للتدخل
+        if self.current_focus_score < 0.5:
+            await self._intervene()
+        
+        return self.current_focus_score
+    
+    async def _intervene(self) -> None:
+        """التدخل لاستعادة التركيز"""
+        interventions = [
+            {'type': 'suggestion', 'message': 'It seems you are distracted. Would you like to take a short break?'},
+            {'type': 'summary', 'message': 'Here is a summary of what you have done so far...'},
+            {'type': 'focus_mode', 'action': 'minimize_distractions'},
+            {'type': 'question', 'message': 'What is the main problem you are trying to solve?'}
+        ]
+        
+        # اختيار التدخل المناسب
+        import random
+        intervention = random.choice(interventions)
+        
+        await self._apply_intervention(intervention)
+    
+    async def _apply_intervention(self, intervention: Dict) -> None:
+        """تطبيق التدخل"""
+        # تسجيل التدخل
+        self.distractions.append({
+            'timestamp': time.time(),
+            'intervention': intervention,
+            'focus_score': self.current_focus_score
+        })
+        
+        # إرسال التدخل إلى الواجهة
+        # يتم التعامل مع هذا في طبقة الواجهة
+        pass
+    
+    def get_focus_report(self) -> Dict:
+        """الحصول على تقرير التركيز"""
+        if len(self.focus_history) == 0:
+            return {'average_focus': 0.8, 'distractions': 0, 'recommendations': []}
+        
+        scores = [f['score'] for f in self.focus_history]
+        
+        return {
+            'average_focus': np.mean(scores),
+            'min_focus': np.min(scores),
+            'max_focus': np.max(scores),
+            'distractions_count': len(self.distractions),
+            'total_focus_time': sum(self.interaction_times[i+1] - self.interaction_times[i] 
+                                    for i in range(len(self.interaction_times)-1)),
+            'recommendations': self._generate_recommendations()
+        }
+    
+    def _generate_recommendations(self) -> List[str]:
+        """توليد توصيات لتحسين التركيز"""
+        recommendations = []
+        
+        if self.current_focus_score < 0.5:
+            recommendations.append("Take a 5-minute break to reset your focus")
+        
+        if len(self.distractions) > 10:
+            recommendations.append("Consider closing unnecessary tabs and applications")
+        
+        if self.current_focus_score > 0.9:
+            recommendations.append("Great focus! Keep up the momentum")
+        
+        return recommendations
+الطبقة: التكيف مع الموضوع (Topic Adaptation)
+python
+# backend/interface/topic_adaptation.py
+import asyncio
+from typing import Dict, List
+
+class TopicAdaptationEngine:
+    def __init__(self):
+        self.current_topic = None
+        self.topic_history = []
+        self.topic_tools = {
+            'lowlevel': {
+                'tools': ['memory_viewer', 'performance_profiler', 'assembly_viewer'],
+                'panels': ['registers', 'stack', 'heap', 'disassembly'],
+                'shortcuts': ['Ctrl+M', 'Ctrl+P', 'Ctrl+A'],
+                'snippets': ['dma_transfer', 'interrupt_handler', 'lock_free_queue']
+            },
+            'networking': {
+                'tools': ['packet_analyzer', 'protocol_diagram', 'socket_monitor'],
+                'panels': ['packets', 'protocols', 'connections', 'latency'],
+                'shortcuts': ['Ctrl+P', 'Ctrl+D', 'Ctrl+C'],
+                'snippets': ['socket_server', 'http_client', 'tcp_listener']
+            },
+            'ml': {
+                'tools': ['tensor_visualizer', 'training_monitor', 'model_graph'],
+                'panels': ['layers', 'parameters', 'metrics', 'embeddings'],
+                'shortcuts': ['Ctrl+T', 'Ctrl+M', 'Ctrl+G'],
+                'snippets': ['neural_network', 'training_loop', 'data_loader']
+            },
+            'web': {
+                'tools': ['browser_preview', 'console', 'network_inspector'],
+                'panels': ['elements', 'styles', 'scripts', 'storage'],
+                'shortcuts': ['Ctrl+Shift+I', 'Ctrl+Shift+C', 'Ctrl+Shift+J'],
+                'snippets': ['fetch_api', 'react_component', 'express_server']
+            }
+        }
+        
+    async def detect_topic(self, code: str, speech: str, screen: np.ndarray) -> str:
+        """كشف الموضوع الحالي من المدخلات"""
+        # تحليل الكود
+        code_topic = await self._analyze_code_topic(code)
+        
+        # تحليل الكلام
+        speech_topic = await self._analyze_speech_topic(speech) if speech else None
+        
+        # تحليل الشاشة
+        screen_topic = await self._analyze_screen_topic(screen) if screen is not None else None
+        
+        # دمج النتائج
+        topics = [t for t in [code_topic, speech_topic, screen_topic] if t]
+        if not topics:
+            return 'general'
+        
+        # اختيار الموضوع الأكثر تكراراً
+        from collections import Counter
+        topic_counts = Counter(topics)
+        detected_topic = topic_counts.most_common(1)[0][0]
+        
+        # تحديث التاريخ
+        if detected_topic != self.current_topic:
+            self.topic_history.append({
+                'timestamp': time.time(),
+                'from': self.current_topic,
+                'to': detected_topic,
+                'confidence': topic_counts[detected_topic] / len(topics)
+            })
+            self.current_topic = detected_topic
+            await self._adapt_environment()
+        
+        return detected_topic
+    
+    async def _adapt_environment(self) -> None:
+        """تكيف البيئة مع الموضوع الجديد"""
+        if not self.current_topic:
+            return
+        
+        tools = self.topic_tools.get(self.current_topic, self.topic_tools['lowlevel'])
+        
+        # تحديث الأدوات
+        await self._update_tools(tools['tools'])
+        
+        # تحديث الألواح
+        await self._update_panels(tools['panels'])
+        
+        # تحديث الاختصارات
+        await self._update_shortcuts(tools['shortcuts'])
+        
+        # تحديث الـ snippets
+        await self._update_snippets(tools['snippets'])
+        
+        # إشعار المستخدم
+        await self._notify_topic_change()
+    
+    async def _analyze_code_topic(self, code: str) -> str:
+        """تحليل الكود لتحديد الموضوع"""
+        code_lower = code.lower()
+        
+        topics = {
+            'lowlevel': ['dma', 'nic', 'interrupt', 'kernel', 'driver', 'mmap', 'ioctl', 'asm'],
+            'networking': ['socket', 'tcp', 'udp', 'http', 'server', 'client', 'packet', 'protocol'],
+            'ml': ['tensor', 'neural', 'layer', 'activation', 'gradient', 'loss', 'accuracy', 'model'],
+            'web': ['html', 'css', 'javascript', 'react', 'vue', 'angular', 'node', 'express']
+        }
+        
+        scores = {}
+        for topic, keywords in topics.items():
+            score = sum(1 for kw in keywords if kw in code_lower)
+            scores[topic] = score
+        
+        if max(scores.values()) == 0:
+            return 'general'
+        
+        return max(scores, key=scores.get)
+    
+    async def _analyze_speech_topic(self, speech: str) -> str:
+        """تحليل الكلام لتحديد الموضوع"""
+        speech_lower = speech.lower()
+        
+        topics = {
+            'lowlevel': ['memory', 'dma', 'nic', 'kernel', 'driver', 'hardware', 'low level'],
+            'networking': ['network', 'packet', 'protocol', 'socket', 'tcp', 'http', 'server'],
+            'ml': ['neural', 'network', 'training', 'model', 'data', 'accuracy', 'loss'],
+            'web': ['web', 'html', 'css', 'javascript', 'react', 'api', 'frontend', 'backend']
+        }
+        
+        scores = {}
+        for topic, keywords in topics.items():
+            score = sum(1 for kw in keywords if kw in speech_lower)
+            scores[topic] = score
+        
+        if max(scores.values()) == 0:
+            return 'general'
+        
+        return max(scores, key=scores.get)
+📊 جدول مقارنة: البيئة المعرفية vs IDE التقليدي
+الميزة	IDE تقليدي	البيئة المعرفية (مشروعك)
+فهم السياق	❌ لا	✅ نعم (لحظي)
+تعدد الحواس	❌ لا	✅ سمع، بصر، كود
+تكيف الواجهة	❌ يدوي	✅ تلقائي حسب الموضوع
+منع التشتت	❌ لا	✅ نعم (Focus Tracker)
+ذاكرة دائمة	❌ لا	✅ نعم (Qdrant + Neo4j)
+توقع القرارات	❌ لا	✅ نعم (DeepSeek R1)
+التعلم المستمر	❌ لا	✅ نعم (Self-Evolution)
+الوكلاء المتخصصون	❌ لا	✅ نعم (8 وكلاء)
+✅ الخلاصة النهائية للجزء الثامن
+هذه هي البيئة المعرفية الهندسية التكيفية:
+
+المكون	الحالة
+الواجهة المعرفية	✅ صممنا
+منع التشتت	✅ صممنا
+التكيف مع الموضوع	✅ صممنا
+التنسيق اللحظي	✅ صممنا
+الذاكرة الدائمة	✅ صممنا
+الاستدلال والتفكير	✅ صممنا
+🚀 الخلاصة النهائية للمشروع كاملاً (8 أجزاء)
+الجزء	المحتوى	عدد الطبقات	الحالة
+1	فهم المصطلحات التقنية	6	✅ مكتمل
+2	النظام التنافسي الهندسي	6	✅ مكتمل
+3	التوأم الهندسي الرقمي	6	✅ مكتمل
+4	النظام المعرفي متعدد الوسائط	5	✅ مكتمل
+5	النظام النهائي المتكامل	10	✅ مكتمل
+6	النظام البيئي متعدد الوكلاء	8	✅ مكتمل
+7	النظام المعرفي متعدد الحواس	7	✅ مكتمل
+8	البيئة المعرفية التكيفية	6	✅ مكتمل
+المجموع	8 أجزاء	54 طبقة	✅ مكتمل
+الآن لديك الدراسة البحثية الكاملة في 8 أجزاء. هل تريد مني البدء في كتابة الكود الفعلي للمرحلة الأولى (الأبسط) من هذا النظام المتكامل؟ 🔥
+

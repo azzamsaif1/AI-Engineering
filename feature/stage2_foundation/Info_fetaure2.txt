@@ -1,0 +1,390 @@
+📚 الدراسة البحثية - الجزء الثاني
+
+النظام التنافسي الهندسي (Competitive Engineering Intelligence)
+لخص التنفيذي للجزء الثاني
+هذا الجزء يتناول الطبقات المتقدمة التي تحول المشروع من "مساعد برمجي" إلى "نظام ذكاء هندسي تنافسي" يفهم الكود، يحلله، يتعلم من الأخطاء، ويتكيف مع المستخدم.
+
+🏗️ المعمارية المتقدمة للنظام (الجزء الثاني)
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    TECH LINGUA MENTOR - الجزء الثاني                            │
+│              النظام التنافسي الهندسي (Competitive Engineering)                  │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  📥 المدخلات (Code + Text + Voice)                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  📝 كود مكتوب  │  🎙️ شرح شفهي  │  📄 وثائق تقنية  │  🔗 مستودعات GitHub     ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🔍 الطبقة 7: فهم الكود (Code Understanding)                                    │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • DeepSeek-Coder / Qwen Coder (فهم الكود والمنطق)                         ││
+│  │  • Tree-sitter (بناء AST لكل لغة)                                           ││
+│  │  • Joern (تحليل تدفق البيانات والتحكم)                                      ││
+│  │  • LLVM (فهم التحسينات منخفضة المستوى)                                      ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🧠 الطبقة 8: تحليل الأداء والتحسين (Performance Analysis)                     │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • تحليل التعقيد الزمني والمكاني                                            ││
+│  │  • اكتشاف الاختناقات (bottlenecks)                                         ││
+│  │  • اقتراح تحسينات (lock-free, cache locality, async IO)                    ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🕸️ الطبقة 9: خريطة المعرفة البرمجية (Code Knowledge Graph)                   │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  mutex → leads_to → deadlock                                                ││
+│  │  epoll → used_in → high_concurrency                                         ││
+│  │  DPDK → bypasses → kernel                                                   ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🧬 الطبقة 10: الذاكرة طويلة المدى (Long-term Memory)                          │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • تذكر أخطاء المستخدم السابقة                                              ││
+│  │  • تتبع تطور المستخدم                                                       ││
+│  │  • بناء ملف شخصي للمبرمج (programmer fingerprint)                          ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🤖 الطبقة 11: الوكلاء المتعددون (Multi-Agent System)                          │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  Agent 1: يفهم الكود                                                        ││
+│  │  Agent 2: يحلل الأداء                                                       ││
+│  │  Agent 3: يبني خريطة التعلم                                                 ││
+│  │  Agent 4: يقارن مع أفضل الممارسات                                           ││
+│  │  Agent 5: يدرب المستخدم ويتنافس معه                                         ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│         ↓                                                                       │
+│  🎯 الطبقة 12: نظام المنافسة التكيفي (Adaptive Competition)                    │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐│
+│  │  • يتعلم من أداء المستخدم                                                   ││
+│  │  • يرفع الصعوبة تدريجياً                                                    ││
+│  │  • يولد تحديات مخصصة                                                        ││
+│  │  • يحسن التفكير الخوارزمي                                                   ││
+│  └─────────────────────────────────────────────────────────────────────────────┘│
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+لجدول الزمني للجزء الثاني (أسابيع 21-40)
+المرحلة	الأسبوع	المهمة	الأدوات	المخرجات
+1	21-22	فهم الكود (Code Understanding)	DeepSeek-Coder, Tree-sitter	نموذج يفهم الكود بلغات متعددة
+2	23-24	تحليل الأداء	LLVM, Custom Analyzer	تقارير أداء وتحسينات مقترحة
+3	25-26	خريطة المعرفة البرمجية	Neo4j, Joern	Graph للعلاقات البرمجية
+4	27-28	الذاكرة طويلة المدى	Qdrant, Vector DB	تتبع تطور المستخدم
+5	29-30	الوكلاء المتعددون	LangGraph, CrewAI	5 وكلاء يعملون معاً
+6	31-32	نظام المنافسة التكيفي	RLlib, Stable Baselines	تحديات مخصصة حسب المستوى
+7	33-34	التكامل مع المشروع الحالي	Flask API	نظام متكامل
+8	35-36	التدريب والتطوير (Fine-tuning)	PyTorch, Custom Model	نموذج مخصص للكود
+9	37-38	الاختبار والتقييم	Benchmark Tests	نظام جاهز للإنتاج
+10	39-40	التوثيق والنشر	Docs, Docker	إصدار كامل
+🛠️ الأدوات والمكتبات للجزء الثاني (مع التقييم)
+#	الطبقة	المكتبة/النموذج	الصعوبة	يحتاج تدريب؟	التوصية
+1	فهم الكود	DeepSeek-Coder (6.7B/33B)	🟡 متوسط	❌ لا (جاهز)	⭐⭐⭐⭐⭐
+2	فهم الكود	Qwen Coder (7B/14B)	🟡 متوسط	❌ لا (جاهز)	⭐⭐⭐⭐⭐
+3	فهم الكود	Code Llama (7B/13B/34B)	🟡 متوسط	❌ لا (جاهز)	⭐⭐⭐⭐
+4	تحليل الكود	Tree-sitter	🟢 سهل	❌ لا	⭐⭐⭐⭐⭐
+5	تحليل عميق	Joern	🔴 صعب	❌ لا (لكن يحتاج تعلم)	⭐⭐⭐⭐
+6	تحسين الأداء	LLVM	🔴 صعب جداً	❌ لا	⭐⭐⭐ (لمتقدمين)
+7	Embeddings للكود	BGE Code Embeddings	🟡 متوسط	❌ لا	⭐⭐⭐⭐⭐
+8	Embeddings للكود	Jina Embeddings v3	🟡 متوسط	❌ لا	⭐⭐⭐⭐⭐
+9	AST Parsing	Tree-sitter	🟢 سهل	❌ لا	⭐⭐⭐⭐⭐
+10	الوكلاء المتعددون	LangGraph	🟡 متوسط	❌ لا	⭐⭐⭐⭐⭐
+11	الوكلاء المتعددون	CrewAI	🟢 سهل	❌ لا	⭐⭐⭐⭐
+12	التعلم التكيفي	Ray RLlib	🔴 صعب	✅ نعم (كبير)	⭐⭐⭐⭐
+13	التعلم التكيفي	Stable Baselines3	🟡 متوسط	✅ نعم	⭐⭐⭐⭐
+🔬 تفاصيل كل طبقة - الجزء الثاني
+صيل كل طبقة - الجزء الثاني
+الطبقة 7: فهم الكود (Code Understanding)
+المطلوب:
+
+فهم الكود ليس كنص، بل كمنطق وتدفق
+
+تحليل الـ Abstract Syntax Tree (AST) لكل لغة
+
+استخراج العلاقات بين الدوال والكلاسات
+
+الأدوات والتثبيت:
+
+# DeepSeek-Coder (يفضل استخدام API أو تشغيل محلي)
+pip install transformers torch
+
+# Tree-sitter
+pip install tree-sitter tree-sitter-python tree-sitter-java tree-sitter-cpp
+
+# Joern (يتطلب Java)
+# تحميل من https://joern.io/
+
+مثال استخدام DeepSeek-Coder:
+
+# backend/code_understanding/deepseek_coder.py
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+class DeepSeekCodeAnalyzer:
+    def __init__(self, model_name="deepseek-ai/deepseek-coder-6.7b-instruct"):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            trust_remote_code=True
+        )
+    
+    def explain_code(self, code, language="python"):
+        """شرح الكود وفهم منطقه"""
+        prompt = f"""### Instruction:
+Explain the following {language} code. What does it do? What are the key concepts?
+
+### Code:
+```{language}
+{code}
+
+
+Explanation:"""
+inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+outputs = self.model.generate(**inputs, max_new_tokens=512)
+return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+def find_optimizations(self, code, language="python"):
+"""اقتراح تحسينات للكود"""
+prompt = f"""### Instruction:
+Analyze this {language} code and suggest optimizations for better performance.
+
+Code:
+{language}
+{code}
+Optimizations:"""
+inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+outputs = self.model.generate(**inputs, max_new_tokens=512)
+return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+text
+
+**مثال استخدام Tree-sitter لتحليل AST:**
+
+```python
+# backend/code_understanding/tree_sitter_analyzer.py
+import tree_sitter_python as tspython
+from tree_sitter import Language, Parser
+
+class ASTAnalyzer:
+    def __init__(self):
+        # تحميل لغة Python
+        self.PY_LANGUAGE = Language(tspython.language())
+        self.parser = Parser(self.PY_LANGUAGE)
+    
+    def parse_code(self, code):
+        """تحويل الكود إلى AST"""
+        tree = self.parser.parse(bytes(code, "utf8"))
+        return tree
+    
+    def extract_functions(self, code):
+        """استخراج جميع الدوال من الكود"""
+        tree = self.parse_code(code)
+        root_node = tree.root_node
+        
+        functions = []
+        self._collect_functions(root_node, functions)
+        return functions
+    
+    def _collect_functions(self, node, functions):
+        if node.type == 'function_definition':
+            # استخراج اسم الدالة
+            for child in node.children:
+                if child.type == 'identifier':
+                    functions.append(child.text.decode('utf8'))
+                    break
+        for child in node.children:
+            self._collect_functions(child, functions)
+الطبقة 9: خريطة المعرفة البرمجية (Code Knowledge Graph)
+المطلوب:
+
+ربط المفاهيم البرمجية بعلاقات حقيقية
+
+تحليل التبعيات بين الدوال والمكتبات
+
+مثال بناء خريطة المعرفة:
+
+python
+# backend/knowledge_graph/code_graph_builder.py
+from neo4j import GraphDatabase
+
+class CodeKnowledgeGraph:
+    def __init__(self, uri="bolt://localhost:7687", user="neo4j", password="password"):
+        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+    
+    def add_code_concept(self, name, concept_type, language):
+        """إضافة مفهوم برمجي"""
+        with self.driver.session() as session:
+            session.run(
+                "MERGE (c:CodeConcept {name: $name}) "
+                "SET c.type = $type, c.language = $language",
+                name=name, type=concept_type, language=language
+            )
+    
+    def add_code_relation(self, concept1, concept2, relation):
+        """إضافة علاقة برمجية"""
+        with self.driver.session() as session:
+            session.run(
+                f"MATCH (a:CodeConcept {{name: $c1}}), (b:CodeConcept {{name: $c2}}) "
+                f"MERGE (a)-[:{relation}]->(b)",
+                c1=concept1, c2=concept2
+            )
+    
+    def find_related_concepts(self, concept, relation=None):
+        """البحث عن مفاهيم مرتبطة"""
+        query = """
+        MATCH (c:CodeConcept {name: $concept})
+        OPTIONAL MATCH (c)-[r]->(related)
+        RETURN related.name as name, type(r) as relation
+        """
+        if relation:
+            query = f"""
+            MATCH (c:CodeConcept {{name: $concept}})-[:{relation}]->(related)
+            RETURN related.name as name
+            """
+        
+        with self.driver.session() as session:
+            result = session.run(query, concept=concept)
+            return [record['name'] for record in result]
+الطبقة 11: الوكلاء المتعددون (Multi-Agent System)
+المطلوب:
+
+5 وكلاء يعملون معاً
+
+كل وكيل له وظيفة محددة
+
+تنسيق بين الوكلاء لحل المشكلات المعقدة
+
+مثال باستخدام LangGraph:
+
+python
+# backend/multi_agent/code_agents.py
+from langgraph.graph import StateGraph, END
+from typing import TypedDict, List
+
+# تعريف حالة النظام
+class AgentState(TypedDict):
+    code: str
+    analysis: dict
+    optimization: dict
+    learning_path: List[str]
+    competition_result: dict
+
+# الوكيل 1: يفهم الكود
+class CodeUnderstandingAgent:
+    def analyze(self, code):
+        return {"complexity": "O(n)", "functions": ["bubble_sort"], "quality": 85}
+
+# الوكيل 2: يحلل الأداء
+class PerformanceAgent:
+    def analyze(self, code):
+        return {"bottlenecks": ["nested_loops"], "memory_usage": "high", "suggestions": ["use_quick_sort"]}
+
+# الوكيل 3: يبني خريطة التعلم
+class RoadmapAgent:
+    def generate(self, analysis):
+        return ["Learn Bubble Sort", "Understand Complexity", "Study Quick Sort"]
+
+# الوكيل 4: يقارن مع أفضل الممارسات
+class BenchmarkAgent:
+    def compare(self, code):
+        return {"score": 75, "better_than": "65% of solutions", "best_practice": "Quick Sort"}
+
+# الوكيل 5: يدرب المستخدم ويتنافس
+class TrainingAgent:
+    def generate_challenge(self, weakness):
+        return {"challenge": "Optimize this bubble sort", "difficulty": "medium", "time_limit": 300}
+
+# بناء سير العمل
+def create_agent_system():
+    workflow = StateGraph(AgentState)
+    
+    # إضافة الوكلاء
+    workflow.add_node("understand", CodeUnderstandingAgent().analyze)
+    workflow.add_node("performance", PerformanceAgent().analyze)
+    workflow.add_node("roadmap", RoadmapAgent().generate)
+    workflow.add_node("benchmark", BenchmarkAgent().compare)
+    workflow.add_node("train", TrainingAgent().generate_challenge)
+    
+    # تحديد التدفق
+    workflow.set_entry_point("understand")
+    workflow.add_edge("understand", "performance")
+    workflow.add_edge("performance", "roadmap")
+    workflow.add_edge("roadmap", "benchmark")
+    workflow.add_edge("benchmark", "train")
+    workflow.add_edge("train", END)
+    
+    return workflow.compile()
+🧬 نظام المنافسة التكيفي (Adaptive Competition)
+المطلوب:
+
+النظام يتعلم من أداء المستخدم
+
+يرفع الصعوبة تدريجياً
+
+يولد تحديات مخصصة
+
+python
+# backend/competition/adaptive_competition.py
+import numpy as np
+from typing import List, Dict
+
+class AdaptiveCompetitionSystem:
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.difficulty_level = 1.0  # 1-10
+        self.user_performance_history = []
+        self.weaknesses = {}
+        self.strengths = {}
+    
+    def update_from_submission(self, problem, solution, score, time_taken):
+        """تحديث مستوى المستخدم بناءً على الأداء"""
+        self.user_performance_history.append({
+            'problem': problem,
+            'score': score,
+            'time': time_taken,
+            'difficulty': self.difficulty_level
+        })
+        
+        # تحليل نقاط الضعف والقوة
+        if score < 60:
+            self.weaknesses[problem['topic']] = self.weaknesses.get(problem['topic'], 0) + 1
+        else:
+            self.strengths[problem['topic']] = self.strengths.get(problem['topic'], 0) + 1
+        
+        # تعديل مستوى الصعوبة
+        if score > 80 and time_taken < problem['expected_time']:
+            self.difficulty_level = min(10, self.difficulty_level + 0.3)
+        elif score < 50:
+            self.difficulty_level = max(1, self.difficulty_level - 0.2)
+    
+    def generate_next_challenge(self):
+        """توليد تحدي مخصص حسب مستوى المستخدم"""
+        # اختيار موضوع ضعيف للمستخدم
+        if self.weaknesses:
+            weak_topic = max(self.weaknesses, key=self.weaknesses.get)
+        else:
+            weak_topic = "general"
+        
+        return {
+            'topic': weak_topic,
+            'difficulty': round(self.difficulty_level, 1),
+            'time_limit': max(60, 300 - int(self.difficulty_level * 15)),
+            'type': 'code_challenge'
+        }
+📊 ملخص: ماذا يضيف الجزء الثاني إلى مشروعك؟
+الميزة	الوصف	القيمة المضافة
+فهم الكود	يفهم منطق الكود وليس فقط نصه	🔥 ثورية
+تحليل الأداء	يكتشف الاختناقات ويقترح تحسينات	🔥 ثورية
+خريطة المعرفة البرمجية	يربط المفاهيم بعلاقات حقيقية	🔥 متقدمة
+الذاكرة طويلة المدى	يتذكر أخطاء المستخدم ويتتبع تطوره	🔥 متقدمة
+الوكلاء المتعددون	5 وكلاء يعملون معاً لحل المشكلات	🔥 ثورية
+المنافسة التكيفية	يتكيف مع مستوى المستخدم ويولد تحديات	🔥 ثورية
+✅ الخلاصة النهائية للجزء الثاني
+هذا الجزء يحول المشروع من:
+
+مساعد برمجي بسيط (يكمل الكود فقط)
+
+إلى نظام ذكاء هندسي تنافسي (يفكر، يحلل، يتعلم، ويتكيف)
+
+الفرق شاسع جداً. 🔥
+

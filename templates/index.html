@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TechLingua Mentor - AI Language Learning & Competition Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <!-- <script src="https://unpkg.com/compromise@14.8.0/builds/compromise.min.js"></script> -->
+    <script src="https://unpkg.com/compromise@14.8.0/builds/compromise.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>TechLingua Mentor</h1>
+            </div>
+            <div class="nav-buttons">
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="usernameDisplay"></span>
+                    <span id="userPoints" style="color: #ff9800;"></span>
+                    <button class="btn btn-logout" id="logoutBtn" style="background: rgba(255,255,255,0.1);">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                <button class="btn btn-login" id="loginButton">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="btn btn-register" id="registerButton">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="lecture-container">
+            <!-- Left: Lecture Player -->
+            <div class="lecture-player">
+                <div class="player-header">
+                    <div class="lecture-title">
+                        <i class="fas fa-microphone-alt"></i> Live Lecture Recording
+                    </div>
+                    <div class="lecture-info">
+                        <span><i class="far fa-clock"></i> <span id="lectureDuration">00:00</span></span>
+                        <span><i class="fas fa-microphone"></i> Recording</span>
+                    </div>
+                </div>
+
+                <!-- Focus Tracker -->
+                <div class="focus-section" id="focusSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-eye"></i> Focus Tracker
+                        </div>
+                        <div class="competition-badge" id="focusGrade">Active</div>
+                    </div>
+                    <div class="focus-score" id="focusScore">100%</div>
+                    <div class="focus-warning" id="focusWarning" style="display: none;">
+                        <i class="fas fa-coffee"></i> Time for a break?
+                    </div>
+                </div>
+                <!-- Topic Detection Display -->
+                <div class="topic-detection-card" id="topicCard" style="display: none;">
+                    <div class="topic-header">
+                        <i class="fas fa-robot"></i> AI Topic Detection
+                        <span class="topic-status" id="topicStatus">Analyzing...</span>
+                    </div>
+                    <div class="topic-icon-container">
+                        <div class="topic-icon" id="topicIcon">📚</div>
+                    </div>
+                    <div class="topic-details">
+                        <div class="topic-title" id="topicTitle">Detecting topic...</div>
+                        <div class="topic-category" id="topicCategory"></div>
+                        <div class="topic-confidence">
+                            <span>Confidence:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidenceFill" style="width: 0%;"></div>
+                            </div>
+                            <span id="confidenceValue">0%</span>
+                        </div>
+                        <div class="topic-keywords" id="topicKeywords"></div>
+                        <div class="topic-subtopics" id="topicSubtopics"></div>
+                    </div>
+                    <button class="topic-edit-btn" id="editTopicBtn" title="Edit topic manually">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+
+                <!-- Video Preview -->
+                <div id="videoPreviewContainer" style="display: none;">
+                    <video id="videoPreview" autoplay muted
+                        style="width: 100%; border-radius: 15px; margin: 15px 0;"></video>
+                </div>
+
+                <div class="player-controls">
+                    <button class="record-btn" id="recordBtn">
+                        <i class="fas fa-microphone"></i>
+                        <div class="recording-indicator"></div>
+                    </button>
+                    <div class="secondary-controls">
+                        <button class="control-btn" id="pauseBtn" title="Pause">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="control-btn" id="stopBtn" title="Stop">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button class="control-btn" id="videoBtn" title="Toggle Camera">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="control-btn" id="downloadBtn" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="audio-controls">
+                    <div class="control-group">
+                        <label>Volume</label>
+                        <input type="range" id="volumeControl" min="0" max="100" value="80">
+                    </div>
+                    <div class="control-group">
+                        <label>Speed</label>
+                        <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+                    </div>
+                </div>
+
+                <div class="language-selector" id="languageSelector">
+                    <div class="lang-option active" data-lang="de">German</div>
+                    <div class="lang-option" data-lang="en">English</div>
+                    <div class="lang-option" data-lang="fr">French</div>
+                </div>
+
+                <div class="audio-visualizer" id="audioVisualizer"></div>
+
+                <!-- Original Transcript -->
+                <div class="transcript-container" id="transcript">
+                    <div style="text-align: center; color: #aaa; padding: 20px;">
+                        <i class="fas fa-microphone-slash"></i> Click the microphone to start recording
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="summary-container" id="summaryContainer">
+                    <h3 class="summary-title"><i class="fas fa-file-alt"></i> Lecture Summary</h3>
+                    <div class="summary-content" id="summaryContent"></div>
+                </div>
+            </div>
+
+            <!-- Right: Sidebar -->
+            <div class="sidebar">
+                <!-- Translation Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-language"></i> Translation
+                    </div>
+                    <div class="translation-controls">
+                        <button class="lang-btn active" data-target="ar">Arabic</button>
+                        <button class="lang-btn" data-target="en">English</button>
+                        <button class="lang-btn" data-target="tr">French</button>
+                    </div>
+                    <div class="translation-input">
+                        <input type="text" id="manualText" placeholder="Enter text to translate...">
+                        <button class="translate-btn" id="manualTranslateBtn">Translate</button>
+                    </div>
+                    <div class="transcript-container" id="translation">
+                        <div style="text-align: center; color: #aaa; padding: 20px;">
+                            📝 Translations will appear here
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Terms Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-code"></i> Technical Terms
+                    </div>
+                    <div class="term-list" id="termList"></div>
+                </div>
+
+                <!-- Competition Arena -->
+                <div class="competition-section" id="competitionSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-trophy"></i> ⚔️ COMPETITION ARENA ⚔️
+                        </div>
+                        <div class="competition-badge" id="competitionBadge">8 Rivals</div>
+                    </div>
+
+                    <div id="directCompetitors" style="margin-bottom: 15px;">
+                        <div style="text-align: center; color: #aaa; padding: 10px; font-size: 12px;">
+                            Click "Start Competition" to begin
+                        </div>
+                    </div>
+
+                    <div id="competitionQuiz"></div>
+
+                    <button id="startCompetitionBtn" class="generate-btn"
+                        style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-play"></i> Start Competition (8 Rivals)
+                    </button>
+
+                    <div id="indirectStats" style="margin-top: 10px; font-size: 12px; color: #aaa; text-align: center;">
+                    </div>
+                </div>
+
+                <!-- Digital Rival Info -->
+                <div class="fingerprint-section" id="digitalRivalSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-robot"></i> 🤝 Your Digital Rival
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 10px;">
+                        <div style="font-size: 24px;">🤝</div>
+                        <div id="rivalLevel" style="font-size: 12px;">Learning from you...</div>
+                        <div id="rivalAccuracy" style="font-size: 11px; color: #aaa;">Accuracy: 70%</div>
+                    </div>
+                </div>
+
+                <!-- Fingerprint Section -->
+                <div class="fingerprint-section" id="fingerprintSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-brain"></i> Your Mental Fingerprint
+                        </div>
+                    </div>
+                    <div class="fingerprint-timeline" id="fingerprintTimeline">
+                        <div class="fingerprint-card past">
+                            <i class="fas fa-history"></i>
+                            <div>Past</div>
+                            <div class="fingerprint-level" id="pastLevel">A1</div>
+                        </div>
+                        <div class="fingerprint-card present">
+                            <i class="fas fa-user"></i>
+                            <div>Present</div>
+                            <div class="fingerprint-level" id="presentLevel">A2</div>
+                        </div>
+                        <div class="fingerprint-card future">
+                            <i class="fas fa-chart-line"></i>
+                            <div>Future</div>
+                            <div class="fingerprint-level" id="futureLevel">B1</div>
+                        </div>
+                    </div>
+                    <div id="weakTermsContainer"></div>
+                </div>
+
+                <!-- Living Lecture Section -->
+                <div class="living-lecture-section" id="livingLectureSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-comment-dots"></i> Living Lecture
+                        </div>
+                    </div>
+                    <div class="living-lecture-message" id="lectureMessage">
+                        I'm listening! Ask me anything about the lecture.
+                    </div>
+                    <div id="absoluteKnowerAlert" class="absolute-knower-alert" style="display: none;"></div>
+                    <div class="translation-input" style="margin-top: 10px;">
+                        <input type="text" id="lectureQuestion" placeholder="Ask the lecture a question...">
+                        <button id="askLectureBtn" class="translate-btn">Ask</button>
+                    </div>
+                </div>
+
+                <!-- Smart Notebook Section -->
+                <div class="smart-notebook" id="notebookSection">
+                    <div class="competition-header">
+                        <div class="competition-title">
+                            <i class="fas fa-book"></i> Smart Notebook
+                        </div>
+                        <button id="speakNotebookBtn" class="competition-badge" style="background: #00d4ff;">
+                            <i class="fas fa-volume-up"></i> Speak All
+                        </button>
+                    </div>
+                    <div id="notebookEntries"></div>
+                </div>
+
+                <!-- Suggested Questions -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-question-circle"></i> Suggested Questions
+                    </div>
+                    <div class="question-generator">
+                        <input type="text" class="question-input" id="questionInput" placeholder="Ask a question...">
+                        <button class="generate-btn" id="generateBtn">Generate</button>
+                    </div>
+                    <div class="question-list" id="questionList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Report -->
+        <div class="session-report">
+            <div class="report-title">
+                <i class="fas fa-chart-line"></i> Learning Session Report
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-value" id="sessionDuration">00:00</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-microphone-alt"></i>
+                    <div class="stat-value" id="wordsAnalyzed">0</div>
+                    <div class="stat-label">Words Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-book"></i>
+                    <div class="stat-value" id="newTerms">0</div>
+                    <div class="stat-label">New Terms</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-question-circle"></i>
+                    <div class="stat-value" id="questionsGenerated">0</div>
+                    <div class="stat-label">Questions</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                <div class="rec-title">
+                    <i class="fas fa-lightbulb"></i> Recommendations
+                </div>
+                <div class="rec-list" id="learningRecs"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 TechLingua Mentor - AI-Powered Language Learning & Competition Platform</p>
+            <p> Compete with 8 rivals including your Digital Twin | 🧠 Super AI is watching</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="overlay" id="overlay"></div>
+    <div class="translation-popup" id="translationPopup">
+        <div class="translation-header">
+            <h2>Translation</h2>
+            <button class="close-btn" id="closePopup">&times;</button>
+        </div>
+        <div class="translation-content">
+            <div class="translation-box">
+                <h3>Original Text</h3>
+                <div id="originalText"></div>
+            </div>
+            <div class="translation-box">
+                <h3>Translation</h3>
+                <div id="translatedText"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="login-form">
+            <h2 style="text-align: center; margin-bottom: 20px;">Login</h2>
+            <div class="form-group">
+                <input type="text" class="form-input" id="loginUsername" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-input" id="loginPassword" placeholder="Password">
+            </div>
+            <button class="form-btn" id="submitLogin">Login</button>
+            <button class="form-btn" id="cancelLogin" style="margin-top: 10px; background: #555;">Cancel</button>
+            <div id="loginError" style="color: #ff4b2b; margin-top: 10px; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="register-form">
+            <h2 style="text-align: center; margin-bottom: 20px;">Create Account</h2>
+            <div class="form-group">
+                <input type="text" class="form-input" id="registerUsername" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-input" id="registerPassword" placeholder="Password">
+            </div>
+            <button class="form-btn" id="submitRegister">Register</button>
+            <button class="form-btn" id="cancelRegister" style="margin-top: 10px; background: #555;">Cancel</button>
+            <div id="registerError" style="color: #ff4b2b; margin-top: 10px; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <div id="notificationContent">
+            <i id="notificationIcon" class="fas fa-info-circle"></i>
+            <span id="notificationMessage"></span>
+        </div>
+    </div>
+
+    <script>
+        // User state from server
+        var currentUser = null;
+        {% if current_user and current_user.is_authenticated %}
+        currentUser = {
+            id: {{ current_user.id }},
+        username: "{{ current_user.username }}"
+        };
+        {% endif %}
+        console.log('Current user:', currentUser);
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
