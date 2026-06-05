@@ -14,24 +14,71 @@ from engines.ghost_engine import GhostCoderEngine
 from engines.prediction_engine import PredictionEngine
 from flask_socketio import SocketIO, emit, join_room
 from engines.topic_engine import DynamicTopicAnalyzer
-# إضافة imports جديدة
 import sys
+import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
-# الآن هذه imports ستعمل
 from backend.nlp.term_extractor import TechnicalTermExtractor
 from backend.embeddings.sentence_encoder import TechnicalEncoder
 from backend.vector_db.qdrant_client import QdrantVectorStore
 from backend.knowledge_graph.graph_builder import KnowledgeGraphBuilder
 from backend.topic_modeling.topic_detector import SmartTopicDetector
 from backend.recommendation.roadmap_generator import RoadmapGenerator
+from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
 
-term_extractor = TechnicalTermExtractor()
-encoder = TechnicalEncoder()
-vector_store = QdrantVectorStore()
-graph_builder = KnowledgeGraphBuilder()
-topic_detector = SmartTopicDetector()
-roadmap_gen = RoadmapGenerator()
+logger = logging.getLogger(__name__)
+
+# --- Lazy component registry (avoids crash if services/models not ready) ---
+_components = {}
+
+def _get_component(name):
+    if name not in _components:
+        try:
+            if name == 'term_extractor':
+                _components[name] = TechnicalTermExtractor()
+            elif name == 'encoder':
+                _components[name] = TechnicalEncoder()
+            elif name == 'vector_store':
+                host = os.environ.get('QDRANT_HOST', 'localhost')
+                port = int(os.environ.get('QDRANT_PORT', '6333'))
+                _components[name] = QdrantVectorStore(host=host, port=port)
+            elif name == 'graph_builder':
+                uri = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
+                user = os.environ.get('NEO4J_USER', 'neo4j')
+                password = os.environ.get('NEO4J_PASSWORD', 'password')
+                _components[name] = KnowledgeGraphBuilder(uri=uri, user=user, password=password)
+            elif name == 'topic_detector':
+                _components[name] = SmartTopicDetector()
+            elif name == 'roadmap_gen':
+                _components[name] = RoadmapGenerator()
+            elif name == 'smart_layer':
+                _components[name] = SelfAdaptiveUnderstandingLayer()
+        except Exception as e:
+            logger.warning("Failed to initialize component '%s': %s", name, e)
+            raise
+    return _components[name]
+
+
+def get_term_extractor():
+    return _get_component('term_extractor')
+
+def get_encoder():
+    return _get_component('encoder')
+
+def get_vector_store():
+    return _get_component('vector_store')
+
+def get_graph_builder():
+    return _get_component('graph_builder')
+
+def get_topic_detector():
+    return _get_component('topic_detector')
+
+def get_roadmap_gen():
+    return _get_component('roadmap_gen')
+
+def get_smart_layer():
+    return _get_component('smart_layer')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -990,24 +1037,24 @@ def smart_analyze():
         return jsonify({'error': 'Text too short'}), 400
     
     # الطبقة 1: استخراج المصطلحات
-    extraction = term_extractor.extract_terms(text, language)
+    extraction = get_term_extractor().extract_terms(text, language)
     
     # الطبقة 2: التحويل إلى متجهات
     terms = [t['text'] for t in extraction['terms']]
-    embeddings = encoder.encode(terms) if terms else []
+    embeddings = get_encoder().encode(terms) if terms else []
     
     # الطبقة 5: تحديد الموضوع
-    topic = topic_detector.get_topic_for_text(text)
+    topic = get_topic_detector().get_topic_for_text(text)
     
     # الطبقة 4: البحث في خريطة المعرفة
     relations = []
     for term in terms[:10]:
-        path = graph_builder.get_learning_path(term)
+        path = get_graph_builder().get_learning_path(term)
         if path:
             relations.append({'concept': term, 'learning_path': path})
     
     # الطبقة 6: خريطة التعلم
-    roadmap = roadmap_gen.generate_roadmap(extraction['terms'])
+    roadmap = get_roadmap_gen().generate_roadmap(extraction['terms'])
     
     return jsonify({
         'terms': extraction['terms'],
@@ -1028,8 +1075,8 @@ def semantic_search():
     if not query:
         return jsonify({'error': 'No query'}), 400
     
-    query_emb = encoder.encode([query])[0]
-    results = vector_store.search(query_emb, top_k=10)
+    query_emb = get_encoder().encode([query])[0]
+    results = get_vector_store().search(query_emb, top_k=10)
     
     return jsonify({
         'query': query,
@@ -1045,12 +1092,40 @@ def learning_roadmap():
     if not target:
         return jsonify({'error': 'No target concept'}), 400
     
-    path = graph_builder.get_learning_path(target)
+    path = get_graph_builder().get_learning_path(target)
     
     return jsonify({
         'target': target,
         'learning_path': path,
         'steps': len(path)
     })
+
+
+# ==================== SELF-ADAPTIVE UNDERSTANDING LAYER ====================
+
+@app.route('/api/smart_analyze_v2', methods=['POST'])
+@login_required
+def smart_analyze_v2():
+    """Self-Adaptive Understanding Layer - fully automatic analysis."""
+    data = request.json
+    text = data.get('text', '')
+
+    if not text or len(text) < 20:
+        return jsonify({'error': 'Text too short for analysis (minimum 20 characters)'}), 400
+
+    try:
+        analysis = get_smart_layer().analyze(text)
+    except Exception as e:
+        logger.exception("smart_analyze_v2 failed")
+        return jsonify({'error': f'Analysis failed: {str(e)}'}), 500
+
+    analysis['session_id'] = data.get('session_id')
+    analysis['timestamp'] = datetime.now().isoformat()
+
+    return jsonify(analysis)
+
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    with app.app_context():
+        db.create_all()
+    socketio.run(app, debug=True, host='0.0.0.0', port=5001)
