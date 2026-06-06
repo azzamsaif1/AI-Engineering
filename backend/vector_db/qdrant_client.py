@@ -13,7 +13,7 @@ class QdrantVectorStore:
         if not any(c.name == self.collection for c in collections):
             self.client.create_collection(
                 collection_name=self.collection,
-                vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+                vectors_config=VectorParams(size=1024, distance=Distance.COSINE)
             )
     
     def upsert(self, point_id, vector, payload):
