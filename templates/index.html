@@ -38,6 +38,141 @@
             </div>
         </nav>
 
+        <!-- ==================== AI ANALYSIS LAB (Stage 1 + Stage 2) ==================== -->
+        <div class="analysis-lab" id="analysisLab">
+            <div class="lab-header">
+                <div class="lab-title">
+                    <i class="fas fa-flask"></i> AI Analysis Lab
+                </div>
+                <div class="lab-subtitle">Self-Adaptive Understanding &middot; Code Understanding &middot; Performance</div>
+            </div>
+
+            <div class="lab-tabs">
+                <button class="lab-tab active" data-tab="understanding">
+                    <i class="fas fa-brain"></i> Smart Understanding
+                </button>
+                <button class="lab-tab" data-tab="code">
+                    <i class="fas fa-sitemap"></i> Code Understanding
+                </button>
+                <button class="lab-tab" data-tab="performance">
+                    <i class="fas fa-gauge-high"></i> Performance
+                </button>
+            </div>
+
+            <!-- Tab 1: Smart Understanding (/api/smart_analyze_v2) -->
+            <div class="lab-panel active" id="panel-understanding">
+                <textarea id="suInput" class="lab-input" rows="5"
+                    placeholder="Paste technical text (any language). The system auto-detects language, domain, level, concepts, clusters and relations..."></textarea>
+                <button class="lab-btn" id="suAnalyzeBtn">
+                    <i class="fas fa-wand-magic-sparkles"></i> Analyze Text
+                </button>
+                <div class="lab-status" id="suStatus"></div>
+                <div class="lab-results" id="suResults" style="display:none;">
+                    <div class="meta-grid">
+                        <div class="meta-card"><div class="meta-label">Language</div><div class="meta-value" id="suLang">-</div></div>
+                        <div class="meta-card"><div class="meta-label">Level</div><div class="meta-value" id="suLevel">-</div></div>
+                        <div class="meta-card meta-wide">
+                            <div class="meta-label">Domain</div>
+                            <div class="meta-value" id="suDomain">-</div>
+                            <div class="confidence-bar"><div class="confidence-fill" id="suDomainConf" style="width:0%"></div></div>
+                            <div class="meta-sub" id="suDomainConfVal">0%</div>
+                        </div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-tags"></i> Discovered Concepts <span class="count-badge" id="suConceptCount">0</span></div>
+                        <div class="chip-cloud" id="suConcepts"></div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-layer-group"></i> Semantic Clusters <span class="count-badge" id="suClusterCount">0</span></div>
+                        <div class="cluster-grid" id="suClusters"></div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-diagram-project"></i> Detected Relations <span class="count-badge" id="suRelationCount">0</span></div>
+                        <div class="relation-list" id="suRelations"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Code Understanding (/api/code/analyze) -->
+            <div class="lab-panel" id="panel-code">
+                <div class="lab-lang-row">
+                    <label>Language</label>
+                    <select id="codeLang" class="lab-select">
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="c">C</option>
+                    </select>
+                </div>
+                <textarea id="codeInput" class="lab-input code" rows="8" spellcheck="false"
+                    placeholder="Paste source code to parse its structure (functions, classes, imports, call graph) and complexity..."></textarea>
+                <button class="lab-btn" id="codeAnalyzeBtn">
+                    <i class="fas fa-sitemap"></i> Analyze Structure
+                </button>
+                <div class="lab-status" id="codeStatus"></div>
+                <div class="lab-results" id="codeResults" style="display:none;">
+                    <div class="meta-grid" id="codeMetrics"></div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-cube"></i> Functions <span class="count-badge" id="codeFuncCount">0</span></div>
+                        <div class="func-list" id="codeFunctions"></div>
+                    </div>
+                    <div class="result-block" id="codeClassBlock">
+                        <div class="result-heading"><i class="fas fa-cubes"></i> Classes <span class="count-badge" id="codeClassCount">0</span></div>
+                        <div class="chip-cloud" id="codeClasses"></div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-arrow-right-arrow-left"></i> Call Graph <span class="count-badge" id="codeCallCount">0</span></div>
+                        <div class="relation-list" id="codeCallGraph"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Performance (/api/code/performance) -->
+            <div class="lab-panel" id="panel-performance">
+                <div class="lab-lang-row">
+                    <label>Language</label>
+                    <select id="perfLang" class="lab-select">
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="c">C</option>
+                    </select>
+                </div>
+                <textarea id="perfInput" class="lab-input code" rows="8" spellcheck="false"
+                    placeholder="Paste source code to estimate time complexity, detect bottlenecks and get optimization hints..."></textarea>
+                <button class="lab-btn" id="perfAnalyzeBtn">
+                    <i class="fas fa-gauge-high"></i> Analyze Performance
+                </button>
+                <div class="lab-status" id="perfStatus"></div>
+                <div class="lab-results" id="perfResults" style="display:none;">
+                    <div class="perf-summary">
+                        <div class="perf-score-ring" id="perfScoreRing">
+                            <div class="perf-score-value" id="perfScore">0</div>
+                            <div class="perf-score-label">score</div>
+                        </div>
+                        <div class="perf-overall">
+                            <div class="meta-label">Overall complexity</div>
+                            <div class="complexity-badge" id="perfOverall">O(1)</div>
+                        </div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-heading"><i class="fas fa-cube"></i> Functions <span class="count-badge" id="perfFuncCount">0</span></div>
+                        <div class="func-list" id="perfFunctions"></div>
+                    </div>
+                    <div class="result-block" id="perfBottleneckBlock">
+                        <div class="result-heading"><i class="fas fa-triangle-exclamation"></i> Bottlenecks <span class="count-badge" id="perfBottleneckCount">0</span></div>
+                        <div class="bottleneck-list" id="perfBottlenecks"></div>
+                    </div>
+                    <div class="result-block" id="perfSuggestBlock">
+                        <div class="result-heading"><i class="fas fa-lightbulb"></i> Optimization Suggestions <span class="count-badge" id="perfSuggestCount">0</span></div>
+                        <div class="suggestion-list" id="perfSuggestions"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <div class="lecture-container">
             <!-- Left: Lecture Player -->
@@ -403,6 +538,7 @@
         console.log('Current user:', currentUser);
     </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/analysis_lab.js') }}"></script>
 </body>
 
 </html>
