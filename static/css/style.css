@@ -1376,3 +1376,5 @@ body {
     color: #f3e6b3;
 }
 .suggestion-row i { color: #f1c40f; margin-right: 6px; }
+
+.meta-card .confidence-bar { margin-top: 8px; width: 100%; }

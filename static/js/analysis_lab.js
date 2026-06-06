@@ -29,14 +29,18 @@
         if (res.redirected || res.status === 401 || res.status === 403) {
             throw new Error("Please log in to use the AI Analysis Lab.");
         }
-        let data;
+        let data = null;
+        let parseFailed = false;
         try {
             data = await res.json();
         } catch (e) {
-            throw new Error("Please log in to use the AI Analysis Lab.");
+            parseFailed = true;
         }
         if (!res.ok) {
             throw new Error(data && data.error ? data.error : "Request failed (" + res.status + ").");
+        }
+        if (parseFailed) {
+            throw new Error("Unexpected server response (status " + res.status + ").");
         }
         return data;
     }
@@ -213,7 +217,9 @@
         const score = Number(d.performance_score) || 0;
         const ring = $("perfScoreRing");
         const col = scoreColor(score);
-        ring.style.background = "conic-gradient(" + col + " " + (score * 3.6) + "deg, rgba(255,255,255,0.08) 0deg)";
+        const deg = score * 3.6;
+        ring.style.background = "conic-gradient(" + col + " 0deg, " + col + " " + deg +
+            "deg, rgba(255,255,255,0.08) " + deg + "deg, rgba(255,255,255,0.08) 360deg)";
         $("perfScore").textContent = score;
         $("perfOverall").textContent = d.overall_complexity || "O(1)";
 
