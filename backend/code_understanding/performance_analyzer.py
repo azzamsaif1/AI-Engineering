@@ -179,7 +179,7 @@ class PerformanceAnalyzer:
     def _time_complexity(loop_depth: int, is_recursive: bool, self_calls: int) -> str:
         if is_recursive:
             if self_calls >= 2:
-                return "O(2^n) worst-case (exponential without memoization)"
+                return "O(2^n) (exponential without memoization)"
             return "O(n) (linear recursion)"
         if loop_depth <= 0:
             return "O(1)"
