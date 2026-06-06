@@ -58,7 +58,7 @@ VectorParams(size=768, distance=Distance.COSINE)
 | `prediction_engine.py` | 426 | Character/line comparison via patterns | No | No |
 | `topic_engine.py` | 58 | Hardcoded keyword-count matching (8 categories) | No | No |
 
-Neither engine parses code structure. Stage 2 Layer 7 (Code Understanding via Tree-sitter) fills this gap entirely.
+None of these engines parse code structure. Stage 2 Layer 7 (Code Understanding via Tree-sitter) fills this gap entirely.
 
 #### 5. Roadmap Generation — TRIVIAL
 
