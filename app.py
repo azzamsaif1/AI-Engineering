@@ -25,6 +25,7 @@ from backend.knowledge_graph.graph_builder import KnowledgeGraphBuilder
 from backend.topic_modeling.topic_detector import SmartTopicDetector
 from backend.recommendation.roadmap_generator import RoadmapGenerator
 from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
+from backend.code_understanding.ast_analyzer import ASTAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,8 @@ def _get_component(name):
                 _components[name] = RoadmapGenerator()
             elif name == 'smart_layer':
                 _components[name] = SelfAdaptiveUnderstandingLayer()
+            elif name == 'ast_analyzer':
+                _components[name] = ASTAnalyzer()
         except Exception as e:
             logger.warning("Failed to initialize component '%s': %s", name, e)
             raise
@@ -79,6 +82,9 @@ def get_roadmap_gen():
 
 def get_smart_layer():
     return _get_component('smart_layer')
+
+def get_ast_analyzer():
+    return _get_component('ast_analyzer')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -1123,6 +1129,33 @@ def smart_analyze_v2():
     analysis['timestamp'] = datetime.now().isoformat()
 
     return jsonify(analysis)
+
+
+# ==================== STAGE 2: CODE UNDERSTANDING (Layer 7) ====================
+
+@app.route('/api/code/analyze', methods=['POST'])
+@login_required
+def code_analyze():
+    """Stage 2 Layer 7 — AST-based code understanding via Tree-sitter."""
+    data = request.json
+    code = data.get('code', '')
+    language = data.get('language', 'python')
+
+    if not code or len(code.strip()) < 5:
+        return jsonify({'error': 'Code too short for analysis'}), 400
+
+    try:
+        result = get_ast_analyzer().analyze(code, language)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        logger.exception("code_analyze failed")
+        return jsonify({'error': f'Code analysis failed: {str(e)}'}), 500
+
+    result['session_id'] = data.get('session_id')
+    result['timestamp'] = datetime.now().isoformat()
+
+    return jsonify(result)
 
 
 if __name__ == '__main__':
