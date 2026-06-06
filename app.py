@@ -26,6 +26,7 @@ from backend.topic_modeling.topic_detector import SmartTopicDetector
 from backend.recommendation.roadmap_generator import RoadmapGenerator
 from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
 from backend.code_understanding.ast_analyzer import ASTAnalyzer
+from backend.code_understanding.performance_analyzer import PerformanceAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,8 @@ def _get_component(name):
                 _components[name] = SelfAdaptiveUnderstandingLayer()
             elif name == 'ast_analyzer':
                 _components[name] = ASTAnalyzer()
+            elif name == 'performance_analyzer':
+                _components[name] = PerformanceAnalyzer()
         except Exception as e:
             logger.warning("Failed to initialize component '%s': %s", name, e)
             raise
@@ -85,6 +88,9 @@ def get_smart_layer():
 
 def get_ast_analyzer():
     return _get_component('ast_analyzer')
+
+def get_performance_analyzer():
+    return _get_component('performance_analyzer')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -1151,6 +1157,33 @@ def code_analyze():
     except Exception as e:
         logger.exception("code_analyze failed")
         return jsonify({'error': f'Code analysis failed: {str(e)}'}), 500
+
+    result['session_id'] = data.get('session_id')
+    result['timestamp'] = datetime.now().isoformat()
+
+    return jsonify(result)
+
+
+# ==================== STAGE 2: PERFORMANCE ANALYSIS (Layer 8) ====================
+
+@app.route('/api/code/performance', methods=['POST'])
+@login_required
+def code_performance():
+    """Stage 2 Layer 8 — static performance analysis built on the Layer 7 AST."""
+    data = request.get_json(silent=True) or {}
+    code = data.get('code', '')
+    language = data.get('language', 'python')
+
+    if not code or len(code.strip()) < 5:
+        return jsonify({'error': 'Code too short for analysis'}), 400
+
+    try:
+        result = get_performance_analyzer().analyze(code, language)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        logger.exception("code_performance failed")
+        return jsonify({'error': f'Performance analysis failed: {str(e)}'}), 500
 
     result['session_id'] = data.get('session_id')
     result['timestamp'] = datetime.now().isoformat()
