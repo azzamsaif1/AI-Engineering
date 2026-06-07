@@ -1143,7 +1143,7 @@ def smart_analyze_v2():
 @login_required
 def code_analyze():
     """Stage 2 Layer 7 — AST-based code understanding via Tree-sitter."""
-    data = request.json
+    data = request.get_json(silent=True) or {}
     code = data.get('code', '')
     language = data.get('language', 'python')
 

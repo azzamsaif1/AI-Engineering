@@ -56,6 +56,15 @@ _IMPORT_TYPES = {
     "c": ("preproc_include",),
 }
 
+# AST node types representing a function/method call, per language
+_CALL_TYPES = {
+    "python": ("call",),
+    "java": ("method_invocation",),
+    "javascript": ("call_expression",),
+    "cpp": ("call_expression",),
+    "c": ("call_expression",),
+}
+
 _BRANCH_TYPES = frozenset({
     "if_statement", "elif_clause",
     "for_statement", "for_in_clause", "for_in_statement",
@@ -191,7 +200,8 @@ class ASTAnalyzer:
         ))
         return functions
 
-    def _parse_function_node(self, node, language: str, code: str) -> dict:
+    def _function_name(self, node, code: str) -> str:
+        """Resolve a function/method name across languages."""
         name = self._child_text(node, "identifier", code) or self._child_text(node, "property_identifier", code)
         # C++/Java: name is inside a function_declarator/declarator child
         if not name:
@@ -200,7 +210,10 @@ class ASTAnalyzer:
                     name = self._child_text(child, "identifier", code)
                     if name:
                         break
-        name = name or "<anonymous>"
+        return name or "<anonymous>"
+
+    def _parse_function_node(self, node, language: str, code: str) -> dict:
+        name = self._function_name(node, code)
         params = self._extract_parameters(node, language, code)
         start_line = node.start_point[0] + 1
         end_line = node.end_point[0] + 1
@@ -284,34 +297,35 @@ class ASTAnalyzer:
     # ------------------------------------------------------------------
 
     def _extract_call_graph(self, root, language: str, code: str) -> list[dict]:
-        """Extract function call relationships from the AST."""
+        """Extract function call relationships from the AST.
+
+        Calls are attributed to the nearest enclosing function (or "<module>").
+        Traversal stops at nested function/class boundaries so an inner
+        function's calls are not misattributed to the function around it.
+        """
         calls = []
         func_type = _FUNC_TYPES.get(language, "function_definition")
+        class_type = _CLASS_TYPES.get(language, "class_definition")
+        call_types = _CALL_TYPES.get(language, ("call",))
+        stop_types = frozenset({func_type, class_type})
 
-        def _visit_function(func_node):
-            caller = self._child_text(func_node, "identifier", code) or "<module>"
-            self._walk_for_type(func_node, "call", lambda call_node: (
+        def _collect(node, caller):
+            self._walk_calls(node, call_types, stop_types, lambda call_node: (
                 calls.append({
                     "caller": caller,
-                    "callee": self._extract_callee_name(call_node, code),
+                    "callee": self._extract_callee_name(call_node),
                 })
             ))
 
-        # Module-level calls (not inside a function or class)
-        class_type = _CLASS_TYPES.get(language, "class_definition")
-        for child in root.children:
-            if child.type not in (func_type, class_type):
-                self._walk_for_type(child, "call", lambda call_node: (
-                    calls.append({
-                        "caller": "<module>",
-                        "callee": self._extract_callee_name(call_node, code),
-                    })
-                ))
+        # Calls directly inside each function/method (not nested ones)
+        self._walk_for_type(root, func_type, lambda fn: _collect(
+            fn, self._function_name(fn, code)
+        ))
 
-        # Calls inside functions
-        self._walk_for_type(root, func_type, _visit_function)
+        # Module-level calls: not inside any function or class body
+        _collect(root, "<module>")
 
-        # Deduplicate
+        # Deduplicate, preserving order
         seen = set()
         unique = []
         for c in calls:
@@ -322,16 +336,20 @@ class ASTAnalyzer:
         return unique
 
     @staticmethod
-    def _extract_callee_name(call_node, code: str) -> str:
-        """Get the function name from a call node."""
-        if not call_node.children:
-            return ""
-        first = call_node.children[0]
-        if first.type == "identifier":
-            return first.text.decode("utf-8") if first.text else ""
-        if first.type == "attribute":
-            return first.text.decode("utf-8") if first.text else ""
-        return first.text.decode("utf-8") if first.text else ""
+    def _extract_callee_name(call_node) -> str:
+        """Get the callee name from a call node (language-aware)."""
+        # Java: method_invocation exposes 'name' (and optional 'object') fields
+        name_field = call_node.child_by_field_name("name")
+        if name_field is not None and name_field.text:
+            obj = call_node.child_by_field_name("object")
+            if obj is not None and obj.text:
+                return f"{obj.text.decode('utf-8')}.{name_field.text.decode('utf-8')}"
+            return name_field.text.decode("utf-8")
+        # Python 'call' / JS & C++ 'call_expression' expose a 'function' field
+        fn = call_node.child_by_field_name("function")
+        if fn is None and call_node.children:
+            fn = call_node.children[0]
+        return fn.text.decode("utf-8") if fn is not None and fn.text else ""
 
     # ------------------------------------------------------------------
     # Complexity metrics
@@ -369,6 +387,20 @@ class ASTAnalyzer:
             callback(node)
         for child in node.children:
             ASTAnalyzer._walk_for_type(child, target_type, callback)
+
+    @staticmethod
+    def _walk_calls(node, call_types, stop_types, callback, _is_root=True):
+        """Walk for call nodes, but do not descend into `stop_types` subtrees.
+
+        The starting node itself is never treated as a stop boundary, so the
+        body of the function/class being scanned is still traversed.
+        """
+        if not _is_root and node.type in stop_types:
+            return
+        if node.type in call_types:
+            callback(node)
+        for child in node.children:
+            ASTAnalyzer._walk_calls(child, call_types, stop_types, callback, _is_root=False)
 
     @staticmethod
     def _child_text(node, child_type: str, code: str) -> Optional[str]:
