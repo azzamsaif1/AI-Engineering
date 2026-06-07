@@ -60,7 +60,8 @@
         });
     }
 
-    function pct(x) { return Math.round((Number(x) || 0) * 100); }
+    // Backend returns domain_confidence already as a percent (0-100); just clamp+round.
+    function pct(x) { return Math.max(0, Math.min(100, Math.round(Number(x) || 0))); }
 
     // ---------------- Smart Understanding ----------------
     function renderUnderstanding(d) {
