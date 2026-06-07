@@ -2,40 +2,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     initSystem();
 });
-// اختبار ظهور بطاقة الموضوع بعد 2 ثانية
-setTimeout(function () {
-    console.log('🔍 Testing topic card display...');
-    const testTopic = {
-        title: 'Algorithms and Data Structures',
-        confidence: 92,
-        keywords: ['algorithm', 'sort', 'search', 'bubble', 'quick'],
-        icon: '🧠',
-        color: '#4caf50',
-        display_name: 'Computer Science'
-    };
-
-    const topicCard = document.getElementById('topicCard');
-    if (topicCard) {
-        topicCard.style.display = 'flex';
-        document.getElementById('topicTitle').innerHTML = testTopic.title;
-        document.getElementById('confidenceFill').style.width = testTopic.confidence + '%';
-        document.getElementById('confidenceValue').innerHTML = testTopic.confidence + '%';
-        document.getElementById('topicIcon').innerHTML = testTopic.icon;
-        document.getElementById('topicStatus').innerHTML = testTopic.confidence >= 70 ? '✓ Confirmed' : 'Analyzing...';
-
-        const keywordsContainer = document.getElementById('topicKeywords');
-        if (keywordsContainer) {
-            keywordsContainer.innerHTML = testTopic.keywords.map(kw =>
-                `<span style="background:rgba(0,212,255,0.15); padding:4px 12px; border-radius:20px; font-size:11px; margin:3px; display:inline-block;">${kw}</span>`
-            ).join('');
-        }
-
-        console.log('✅ Topic card displayed!');
-        showNotification('Topic card test: ' + testTopic.title);
-    } else {
-        console.error('❌ topicCard element not found!');
-    }
-}, 2000);
 // ==================== SOCKET.IO CONNECTION ====================
 let socket = null;
 let currentCompetitionId = null;

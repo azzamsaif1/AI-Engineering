@@ -150,23 +150,6 @@ function initSocket() {
         console.error('Failed to initialize socket:', error);
     }
 }
-function testShowTopicCard() {
-    const testTopic = {
-        category: 'algorithms',
-        title: 'Introduction to Sorting Algorithms',
-        display_name: 'Algorithms & Data Structures',
-        icon: '🧠',
-        color: '#4caf50',
-        confidence: 92,
-        keywords: ['algorithmus', 'sort', 'bubble', 'quick'],
-        subtopics: ['Sorting Algorithms', 'Search Algorithms', 'Data Structures']
-    };
-    displayTopicCard(testTopic);
-}
-
-setTimeout(() => {
-    testShowTopicCard();
-}, 3000);
 function joinCompetitionRoom(sessionId) {
     if (!socket) initSocket();
     currentRoom = `comp_${sessionId}`;
@@ -1570,13 +1553,14 @@ function startTopicAnalysis() {
                     })
                 });
 
-                // Display topic card
+                // Display topic card. Icon/colour come from the backend
+                // UnifiedIntentEngine (semantic) — no keyword classification here.
                 displayTopicCard({
-                    title: data.topic,
+                    title: data.display_name || data.topic,
                     confidence: data.confidence,
                     keywords: data.keywords,
-                    icon: getTopicIcon(data.topic),
-                    color: getTopicColor(data.confidence)
+                    icon: data.icon || '📚',
+                    color: data.color || getTopicColor(data.confidence)
                 });
             }
         } catch (error) {
@@ -1587,24 +1571,9 @@ function startTopicAnalysis() {
     }, 8000); // Analyze every 8 seconds
 }
 
-function getTopicIcon(topic) {
-    const icons = {
-        'algorithm': '🧠',
-        'database': '🗄️',
-        'network': '🌐',
-        'web': '🌍',
-        'programming': '💻',
-        'security': '🔒',
-        'ai': '🤖',
-        'cloud': '☁️'
-    };
-
-    const lowerTopic = topic.toLowerCase();
-    for (const [key, icon] of Object.entries(icons)) {
-        if (lowerTopic.includes(key)) return icon;
-    }
-    return '📚';
-}
+// NOTE: topic icons are now provided by the backend UnifiedIntentEngine
+// (semantic classification). The old keyword-based getTopicIcon() was removed
+// to guarantee zero keyword-based classification on the frontend.
 
 function getTopicColor(confidence) {
     if (confidence >= 80) return '#4caf50';
