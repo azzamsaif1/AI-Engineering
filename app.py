@@ -319,7 +319,7 @@ def save_transcript():
                 logger.exception("Realtime topic detection failed")
                 topic_data = None
 
-            if topic_data:
+            if topic_data and topic_data.get('confidence', 0) > 0:
                 session.topic_category = topic_data['category']
                 session.topic_title = topic_data['title']
                 session.topic_confidence = topic_data['confidence']
