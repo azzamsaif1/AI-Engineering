@@ -1,6 +1,7 @@
 """
-Audio Listener with Real-time Topic Detection using BERTopic
-This script listens to microphone input and detects topics dynamically.
+Audio Listener with Real-time Topic Detection.
+This script listens to microphone input and detects topics dynamically via the
+UnifiedIntentEngine (semantic Self-Adaptive Understanding Layer, no keywords).
 """
 
 import sys
@@ -9,14 +10,12 @@ import time
 import json
 import threading
 from collections import deque
-import my_custom_module  # Error: Import "my_custom_module" could not be resolved
-from utils import helper # Error: Import "utils" could not be resolved
 
 # Add backend to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
-# Import topic engine
-from engines.topic_engine import DynamicTopicAnalyzer
+# Single source of truth for topic/intent classification (semantic, no keywords)
+from backend.nlp.unified_intent_engine import UnifiedIntentEngine
 
 # Try to import RealtimeSTT (optional - for better performance)
 try:
@@ -39,11 +38,12 @@ except ImportError:
 
 class AudioTopicListener:
     """
-    Real-time audio listener that detects topics using BERTopic
+    Real-time audio listener that detects topics via the UnifiedIntentEngine
+    (semantic Self-Adaptive Understanding Layer).
     """
     
     def __init__(self):
-        self.analyzer = DynamicTopicAnalyzer()
+        self.analyzer = UnifiedIntentEngine.instance()
         self.is_listening = False
         self.current_topic = {"name": "Waiting for speech...", "confidence": 0, "keywords": []}
         self.text_buffer = deque(maxlen=50)
@@ -65,7 +65,7 @@ class AudioTopicListener:
             combined = " ".join(documents)
             
             try:
-                result = self.analyzer.analyze(combined)
+                result = self.analyzer.detect_topic(combined)
                 if result and result.get('confidence', 0) > 30:
                     self.current_topic = result
                     self.display_topic()
@@ -195,7 +195,7 @@ def test_with_text():
     print("📝 TESTING TOPIC DETECTION WITH SAMPLE TEXT")
     print("=" * 60)
     
-    analyzer = DynamicTopicAnalyzer()
+    analyzer = UnifiedIntentEngine.instance()
     
     test_texts = [
         "Today we will learn about sorting algorithms. Bubble sort works by repeatedly swapping adjacent elements if they are in the wrong order.",
@@ -207,7 +207,7 @@ def test_with_text():
     
     for i, text in enumerate(test_texts, 1):
         print(f"\n📄 Sample {i}: {text[:60]}...")
-        result = analyzer.analyze(text)
+        result = analyzer.detect_topic(text)
         
         if result:
             print(f"   🎯 Topic: {result.get('name', 'Unknown')}")

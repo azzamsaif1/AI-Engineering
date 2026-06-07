@@ -13,7 +13,6 @@ from deep_translator import GoogleTranslator
 from engines.ghost_engine import GhostCoderEngine
 from engines.prediction_engine import PredictionEngine
 from flask_socketio import SocketIO, emit, join_room
-from engines.topic_engine import DynamicTopicAnalyzer
 import sys
 import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
@@ -22,9 +21,9 @@ from backend.nlp.term_extractor import TechnicalTermExtractor
 from backend.embeddings.sentence_encoder import TechnicalEncoder
 from backend.vector_db.qdrant_client import QdrantVectorStore
 from backend.knowledge_graph.graph_builder import KnowledgeGraphBuilder
-from backend.topic_modeling.topic_detector import SmartTopicDetector
 from backend.recommendation.roadmap_generator import RoadmapGenerator
 from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
+from backend.nlp.unified_intent_engine import UnifiedIntentEngine
 from backend.code_understanding.ast_analyzer import ASTAnalyzer
 from backend.code_understanding.performance_analyzer import PerformanceAnalyzer
 
@@ -49,12 +48,15 @@ def _get_component(name):
                 user = os.environ.get('NEO4J_USER', 'neo4j')
                 password = os.environ.get('NEO4J_PASSWORD', 'password')
                 _components[name] = KnowledgeGraphBuilder(uri=uri, user=user, password=password)
-            elif name == 'topic_detector':
-                _components[name] = SmartTopicDetector()
             elif name == 'roadmap_gen':
                 _components[name] = RoadmapGenerator()
             elif name == 'smart_layer':
                 _components[name] = SelfAdaptiveUnderstandingLayer()
+            elif name == 'intent_engine':
+                # Single source of truth for topic/intent classification.
+                # Reuses the same SelfAdaptiveUnderstandingLayer instance so all
+                # entry points share one semantic pipeline (and one model load).
+                _components[name] = UnifiedIntentEngine(layer=_get_component('smart_layer'))
             elif name == 'ast_analyzer':
                 _components[name] = ASTAnalyzer()
             elif name == 'performance_analyzer':
@@ -77,8 +79,8 @@ def get_vector_store():
 def get_graph_builder():
     return _get_component('graph_builder')
 
-def get_topic_detector():
-    return _get_component('topic_detector')
+def get_intent_engine():
+    return _get_component('intent_engine')
 
 def get_roadmap_gen():
     return _get_component('roadmap_gen')
@@ -311,26 +313,31 @@ def save_transcript():
         all_text = ' '.join([t.text for t in Transcript.query.filter_by(session_id=session_id, is_final=True).all()])
         
         if len(all_text) > 100 and session.topic_confidence < 80:
-            topic_data = detect_topic_from_text(all_text)
-            
-            session.topic_category = topic_data['category']
-            session.topic_title = topic_data['title']
-            session.topic_confidence = topic_data['confidence']
-            session.topic_keywords = json.dumps(topic_data['keywords'])
-            
-            db.session.commit()
-            
-            from flask_socketio import emit
-            emit('topic_detected', {
-                'category': topic_data['category'],
-                'title': topic_data['title'],
-                'display_name': topic_data['display_name'],
-                'icon': topic_data['icon'],
-                'color': topic_data['color'],
-                'confidence': topic_data['confidence'],
-                'keywords': topic_data['keywords'],
-                'subtopics': topic_data['subtopics']
-            }, room=f"session_{session_id}", namespace='/')
+            try:
+                topic_data = get_intent_engine().detect_topic(all_text)
+            except Exception:
+                logger.exception("Realtime topic detection failed")
+                topic_data = None
+
+            if topic_data:
+                session.topic_category = topic_data['category']
+                session.topic_title = topic_data['title']
+                session.topic_confidence = topic_data['confidence']
+                session.topic_keywords = json.dumps(topic_data['keywords'])
+
+                db.session.commit()
+
+                from flask_socketio import emit
+                emit('topic_detected', {
+                    'category': topic_data['category'],
+                    'title': topic_data['title'],
+                    'display_name': topic_data['display_name'],
+                    'icon': topic_data['icon'],
+                    'color': topic_data['color'],
+                    'confidence': topic_data['confidence'],
+                    'keywords': topic_data['keywords'],
+                    'subtopics': topic_data['subtopics']
+                }, room=f"session_{session_id}", namespace='/')
     
     db.session.commit()
     return jsonify({'success': True})
@@ -455,132 +462,6 @@ def session_stats(session_id):
         'points': current_user.points
     })
 
-# ==================== TOPIC DETECTION DATABASE ====================
-
-TOPIC_CATEGORIES = {
-    'algorithms': {
-        'name': 'Algorithms & Data Structures',
-        'icon': '🧠',
-        'color': '#4caf50',
-        'keywords': ['algorithmus', 'algorithm', 'sort', 'suche', 'search', 'bubble', 'quick', 'merge', 'heap', 'hash', 'baum', 'tree', 'liste', 'list', 'array', 'komplexität', 'complexity', 'effizienz', 'efficiency'],
-        'subtopics': ['Sorting Algorithms', 'Search Algorithms', 'Data Structures', 'Complexity Analysis']
-    },
-    'databases': {
-        'name': 'Databases',
-        'icon': '🗄️',
-        'color': '#2196f3',
-        'keywords': ['datenbank', 'database', 'sql', 'nosql', 'tabelle', 'table', 'query', 'join', 'index', 'speicher', 'storage', 'relation', 'transaktion', 'transaction'],
-        'subtopics': ['SQL Queries', 'Database Design', 'Indexing', 'Transactions']
-    },
-    'networking': {
-        'name': 'Computer Networks',
-        'icon': '🌐',
-        'color': '#ff9800',
-        'keywords': ['netzwerk', 'network', 'server', 'client', 'ip', 'http', 'https', 'tcp', 'udp', 'router', 'switch', 'firewall', 'dns', 'protocol'],
-        'subtopics': ['Network Protocols', 'IP Addressing', 'Routing', 'Network Security']
-    },
-    'web_development': {
-        'name': 'Web Development',
-        'icon': '🌍',
-        'color': '#9c27b0',
-        'keywords': ['web', 'html', 'css', 'javascript', 'js', 'react', 'angular', 'vue', 'api', 'rest', 'frontend', 'backend'],
-        'subtopics': ['HTML/CSS', 'JavaScript', 'Frontend Frameworks', 'APIs']
-    },
-    'programming': {
-        'name': 'Programming Basics',
-        'icon': '💻',
-        'color': '#00bcd4',
-        'keywords': ['programmierung', 'programming', 'variable', 'funktion', 'function', 'klasse', 'class', 'objekt', 'object', 'schleife', 'loop', 'if', 'else', 'while', 'for'],
-        'subtopics': ['Variables', 'Functions', 'Loops', 'Conditionals', 'OOP']
-    },
-    'cybersecurity': {
-        'name': 'Cybersecurity',
-        'icon': '🔒',
-        'color': '#f44336',
-        'keywords': ['sicherheit', 'security', 'verschlüsselung', 'encryption', 'authentifizierung', 'authentication', 'firewall', 'hacking', 'malware', 'virus'],
-        'subtopics': ['Encryption', 'Authentication', 'Network Security', 'Security Best Practices']
-    },
-    'ai_ml': {
-        'name': 'Artificial Intelligence',
-        'icon': '🤖',
-        'color': '#e91e63',
-        'keywords': ['ki', 'ai', 'ml', 'machine learning', 'deep learning', 'neural', 'network', 'training', 'model', 'data science'],
-        'subtopics': ['Machine Learning', 'Neural Networks', 'Data Science', 'AI Applications']
-    },
-    'cloud': {
-        'name': 'Cloud Computing',
-        'icon': '☁️',
-        'color': '#03a9f4',
-        'keywords': ['cloud', 'aws', 'azure', 'docker', 'kubernetes', 'container', 'virtualisierung', 'virtualization', 'devops'],
-        'subtopics': ['Cloud Services', 'Containers', 'DevOps', 'Serverless']
-    },
-    'general': {
-        'name': 'General IT',
-        'icon': '📚',
-        'color': '#9e9e9e',
-        'keywords': [],
-        'subtopics': ['IT Fundamentals', 'Computer Science Basics']
-    }
-}
-
-def detect_topic_from_text(text):
-    text_lower = text.lower()
-    
-    scores = {}
-    matched_keywords = {}
-    
-    for category, data in TOPIC_CATEGORIES.items():
-        score = 0
-        keywords_found = []
-        for keyword in data['keywords']:
-            if keyword in text_lower:
-                score += 1
-                keywords_found.append(keyword)
-        scores[category] = score
-        matched_keywords[category] = keywords_found
-    
-    best_category = max(scores, key=scores.get)
-    
-    if scores[best_category] == 0:
-        best_category = 'general'
-    
-    max_possible = len(TOPIC_CATEGORIES[best_category]['keywords'])
-    confidence = min(100, int((scores[best_category] / max(1, max_possible)) * 100 + 30))
-    
-    title = generate_title(best_category, matched_keywords[best_category])
-    
-    return {
-        'category': best_category,
-        'title': title,
-        'display_name': TOPIC_CATEGORIES[best_category]['name'],
-        'icon': TOPIC_CATEGORIES[best_category]['icon'],
-        'color': TOPIC_CATEGORIES[best_category]['color'],
-        'confidence': confidence,
-        'keywords': matched_keywords[best_category],
-        'subtopics': TOPIC_CATEGORIES[best_category]['subtopics']
-    }
-
-def generate_title(category, keywords):
-    if category == 'algorithms':
-        if any(k in ' '.join(keywords) for k in ['sort', 'bubble', 'quick', 'merge']):
-            return 'Introduction to Sorting Algorithms'
-        return 'Understanding Algorithms and Data Structures'
-    elif category == 'databases':
-        return 'Database Fundamentals and SQL'
-    elif category == 'networking':
-        return 'Computer Networks and Protocols'
-    elif category == 'web_development':
-        return 'Web Development Basics'
-    elif category == 'programming':
-        return 'Programming Fundamentals'
-    elif category == 'cybersecurity':
-        return 'Cybersecurity Essentials'
-    elif category == 'ai_ml':
-        return 'Introduction to Artificial Intelligence'
-    elif category == 'cloud':
-        return 'Cloud Computing Concepts'
-    else:
-        return 'Technical Lecture'
 
 # ==================== COMPETITION API ====================
 
@@ -960,8 +841,6 @@ def predict_summary():
 
 # ==================== TOPIC DETECTION API ====================
 
-topic_analyzer = DynamicTopicAnalyzer()
-
 @app.route('/api/topic/detect', methods=['POST'])
 @login_required
 def detect_topic():
@@ -976,17 +855,21 @@ def detect_topic():
         })
     
     try:
-        result = topic_analyzer.analyze(text)
+        result = get_intent_engine().detect_topic(text)
         
         return jsonify({
             'success': True,
             'topic': result.get('name', 'Technical Lecture'),
+            'display_name': result.get('display_name'),
             'confidence': result.get('confidence', 0),
             'keywords': result.get('keywords', []),
+            'subtopics': result.get('subtopics', []),
+            'icon': result.get('icon'),
+            'color': result.get('color'),
             'topic_id': result.get('topic_id', -1)
         })
     except Exception as e:
-        print(f"Topic detection error: {e}")
+        logger.exception("Topic detection error")
         return jsonify({
             'success': False,
             'error': str(e),
@@ -1056,7 +939,7 @@ def smart_analyze():
     embeddings = get_encoder().encode(terms) if terms else []
     
     # الطبقة 5: تحديد الموضوع
-    topic = get_topic_detector().get_topic_for_text(text)
+    topic = get_intent_engine().detect_topic(text)
     
     # الطبقة 4: البحث في خريطة المعرفة
     relations = []
