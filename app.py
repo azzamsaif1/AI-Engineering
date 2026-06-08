@@ -26,7 +26,7 @@ from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
 from backend.nlp.unified_intent_engine import UnifiedIntentEngine
 from backend.code_understanding.ast_analyzer import ASTAnalyzer
 from backend.code_understanding.performance_analyzer import PerformanceAnalyzer
-from backend.memory.vector_memory import VectorMemory
+from backend.memory.vector_memory import VectorMemory, VALID_KINDS
 
 logger = logging.getLogger(__name__)
 
@@ -1063,6 +1063,8 @@ def memory_remember():
 
     if not text or len(text.strip()) < 3:
         return jsonify({'error': 'Text too short to remember'}), 400
+    if kind not in VALID_KINDS:
+        return jsonify({'error': f'Invalid kind. Must be one of: {sorted(VALID_KINDS)}'}), 400
 
     try:
         point_id = get_vector_memory().remember(
@@ -1093,6 +1095,8 @@ def memory_recall():
 
     if not query or len(query.strip()) < 3:
         return jsonify({'error': 'Query too short'}), 400
+    if kind is not None and kind not in VALID_KINDS:
+        return jsonify({'error': f'Invalid kind. Must be one of: {sorted(VALID_KINDS)}'}), 400
 
     try:
         results = get_vector_memory().recall(current_user.id, query, top_k=top_k, kind=kind)

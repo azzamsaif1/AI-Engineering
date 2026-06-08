@@ -29,10 +29,13 @@ from typing import Optional
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
+    Direction,
     Distance,
     FieldCondition,
     Filter,
+    FilterSelector,
     MatchValue,
+    OrderBy,
     PointStruct,
     VectorParams,
 )
@@ -62,15 +65,18 @@ class VectorMemory:
                 collection_name=self._collection,
                 vectors_config=VectorParams(size=self._dim, distance=Distance.COSINE),
             )
-            # Index user_id so filtered search/scroll stays fast as memory grows.
+        # Ensure payload indexes (idempotent): user_id for fast filtering, and
+        # created_at so Qdrant-side `order_by` works for the timeline. Running this
+        # outside the create branch also upgrades pre-existing collections.
+        for field, schema in (("user_id", "integer"), ("created_at", "float")):
             try:
                 self._client.create_payload_index(
                     collection_name=self._collection,
-                    field_name="user_id",
-                    field_schema="integer",
+                    field_name=field,
+                    field_schema=schema,
                 )
             except Exception:
-                logger.debug("payload index for user_id already exists or unsupported")
+                logger.debug("payload index for %s already exists or unsupported", field)
 
     # ------------------------------------------------------------------ #
     def _embed(self, text: str):
@@ -137,23 +143,27 @@ class VectorMemory:
         return out
 
     def timeline(self, user_id: int, limit: int = 50) -> list:
-        """Return the user's most recent memories (newest first)."""
+        """Return the user's most recent memories (newest first).
+
+        Uses Qdrant-side ``order_by(created_at DESC)`` so we get the actual N most
+        recent memories; a plain ``scroll(limit=...)`` returns points in point-id
+        (UUID) order, which is unrelated to insertion time.
+        """
         points, _ = self._client.scroll(
             collection_name=self._collection,
             scroll_filter=self._user_filter(user_id),
             limit=limit,
             with_payload=True,
             with_vectors=False,
+            order_by=OrderBy(key="created_at", direction=Direction.DESC),
         )
-        items = [{
+        return [{
             "id": pt.id,
             "text": (pt.payload or {}).get("text", ""),
             "kind": (pt.payload or {}).get("kind"),
             "domain": (pt.payload or {}).get("domain"),
             "created_at": (pt.payload or {}).get("created_at", 0),
         } for pt in points]
-        items.sort(key=lambda x: x["created_at"] or 0, reverse=True)
-        return items
 
     def profile(self, user_id: int, sample: int = 500) -> dict:
         """Aggregate the user's memories into a 'learning fingerprint'."""
@@ -192,6 +202,6 @@ class VectorMemory:
         """Delete all memories for a user (privacy / reset)."""
         self._client.delete(
             collection_name=self._collection,
-            points_selector=self._user_filter(user_id),
+            points_selector=FilterSelector(filter=self._user_filter(user_id)),
         )
         return True
