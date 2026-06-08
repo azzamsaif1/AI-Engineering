@@ -26,6 +26,7 @@ from backend.nlp.smart_understanding_layer import SelfAdaptiveUnderstandingLayer
 from backend.nlp.unified_intent_engine import UnifiedIntentEngine
 from backend.code_understanding.ast_analyzer import ASTAnalyzer
 from backend.code_understanding.performance_analyzer import PerformanceAnalyzer
+from backend.memory.vector_memory import VectorMemory
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,13 @@ def _get_component(name):
                 # Reuses the same SelfAdaptiveUnderstandingLayer instance so all
                 # entry points share one semantic pipeline (and one model load).
                 _components[name] = UnifiedIntentEngine(layer=_get_component('smart_layer'))
+            elif name == 'vector_memory':
+                # Stage 2 Layer 9 — long-term semantic memory. Reuses the shared
+                # BGE-M3 encoder and the same Qdrant instance as vector_store.
+                host = os.environ.get('QDRANT_HOST', 'localhost')
+                port = int(os.environ.get('QDRANT_PORT', '6333'))
+                _components[name] = VectorMemory(encoder=_get_component('encoder'),
+                                                 host=host, port=port)
             elif name == 'ast_analyzer':
                 _components[name] = ASTAnalyzer()
             elif name == 'performance_analyzer':
@@ -84,6 +92,9 @@ def get_intent_engine():
 
 def get_roadmap_gen():
     return _get_component('roadmap_gen')
+
+def get_vector_memory():
+    return _get_component('vector_memory')
 
 def get_smart_layer():
     return _get_component('smart_layer')
@@ -1017,7 +1028,113 @@ def smart_analyze_v2():
     analysis['session_id'] = data.get('session_id')
     analysis['timestamp'] = datetime.now().isoformat()
 
+    # Stage 2 Layer 9 — persist this analysis into the user's long-term memory
+    # (best-effort: never let memory failures break the analysis response).
+    try:
+        ctx = analysis.get('context', {})
+        get_vector_memory().remember(
+            user_id=current_user.id,
+            text=text,
+            kind='analysis',
+            metadata={
+                'domain': ctx.get('domain'),
+                'language': ctx.get('language'),
+                'level': ctx.get('level'),
+                'session_id': data.get('session_id'),
+            },
+        )
+        analysis['memory_stored'] = True
+    except Exception:
+        logger.exception("vector memory remember failed")
+        analysis['memory_stored'] = False
+
     return jsonify(analysis)
+
+
+# ==================== STAGE 2: VECTOR MEMORY (Layer 9) ====================
+
+@app.route('/api/memory/remember', methods=['POST'])
+@login_required
+def memory_remember():
+    """Store an interaction in the current user's long-term semantic memory."""
+    data = request.get_json(silent=True) or {}
+    text = data.get('text', '')
+    kind = data.get('kind', 'note')
+
+    if not text or len(text.strip()) < 3:
+        return jsonify({'error': 'Text too short to remember'}), 400
+
+    try:
+        point_id = get_vector_memory().remember(
+            user_id=current_user.id,
+            text=text,
+            kind=kind,
+            metadata={
+                'domain': data.get('domain'),
+                'language': data.get('language'),
+                'level': data.get('level'),
+                'session_id': data.get('session_id'),
+            },
+        )
+        return jsonify({'success': True, 'id': point_id})
+    except Exception as e:
+        logger.exception("memory_remember failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/memory/recall', methods=['POST'])
+@login_required
+def memory_recall():
+    """Recall the user's most semantically similar past memories for a query."""
+    data = request.get_json(silent=True) or {}
+    query = data.get('query', '')
+    top_k = int(data.get('top_k', 5))
+    kind = data.get('kind')
+
+    if not query or len(query.strip()) < 3:
+        return jsonify({'error': 'Query too short'}), 400
+
+    try:
+        results = get_vector_memory().recall(current_user.id, query, top_k=top_k, kind=kind)
+        return jsonify({'success': True, 'query': query, 'results': results})
+    except Exception as e:
+        logger.exception("memory_recall failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/memory/profile', methods=['GET'])
+@login_required
+def memory_profile():
+    """Return the user's long-term learning fingerprint."""
+    try:
+        return jsonify({'success': True, 'profile': get_vector_memory().profile(current_user.id)})
+    except Exception as e:
+        logger.exception("memory_profile failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/memory/timeline', methods=['GET'])
+@login_required
+def memory_timeline():
+    """Return the user's most recent memories (newest first)."""
+    try:
+        limit = int(request.args.get('limit', 50))
+        return jsonify({'success': True, 'memories': get_vector_memory().timeline(current_user.id, limit=limit)})
+    except Exception as e:
+        logger.exception("memory_timeline failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/memory/forget', methods=['POST'])
+@login_required
+def memory_forget():
+    """Delete all of the current user's stored memories (privacy / reset)."""
+    try:
+        get_vector_memory().forget(current_user.id)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.exception("memory_forget failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== STAGE 2: CODE UNDERSTANDING (Layer 7) ====================
