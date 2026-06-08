@@ -22,8 +22,11 @@ class QdrantVectorStore:
         self.client.upsert(collection_name=self.collection, points=[point])
     
     def search(self, query_vector, top_k=10):
-        return self.client.search(
+        # qdrant-client >=1.10 removed `.search()` in favour of `.query_points()`.
+        if hasattr(query_vector, "tolist"):
+            query_vector = query_vector.tolist()
+        return self.client.query_points(
             collection_name=self.collection,
-            query_vector=query_vector,
+            query=query_vector,
             limit=top_k
-        )
+        ).points

@@ -27,7 +27,7 @@ tree-sitter-cpp>=0.21
 deep-translator>=1.11,<2.0
 
 # Vector DB & Graph DB
-qdrant-client>=1.9,<2.0
+qdrant-client>=1.10,<2.0
 neo4j>=5.19,<6.0
 
 # Utilities
